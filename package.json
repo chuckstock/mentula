@@ -1,0 +1,15 @@
+{
+  "name": "node-socket-io",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node ./server/server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3",
+    "socket.io": "^1.3.6"
+  },
+  "engines": {
+    "node": "0.12.2"
+  }
+}
