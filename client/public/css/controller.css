@@ -1,0 +1,16 @@
+html, body {
+  background-color: black;
+  height: 100%
+
+}
+
+#left-track,
+#right-track {
+  background-color: white;
+  min-height: 100%;
+}
+
+#fire {
+  background: black;
+  min-height: 100%;
+}

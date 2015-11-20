@@ -26,36 +26,22 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../client', 'public', 'index.html'));
 });
 
-app.post('/user/add', function(req, res) {
-  if (req.body.username && req.body.password) {
-    new User({name:req.body.username, password:req.body.password}).save(function(err, user) {
-      if (!err) {
-        res.statusCode = 200;
-        res.json({
-          message: "User successfully created.",
-          code: 200,
-        });
-      } else {
-        if (err.code === 11000) {
-          res.statusCode = 400;
-          res.json({
-            message: "That username already exists",
-            code: 400
-          });
-        } else { throw err; }
-      }
-    });
-  } else {
-    res.statusCode = 400;
-    res.json({
-      message: "Must provide all fields",
-      code: 400
-    });
-  }
-});
+app.get('/controller', function(req, res) {
+  //Serve up phone page here.
+  res.sendFile(path.join(__dirname, '../client', 'public', 'controller.html'));
+})
+
+app.get('/game', function(req, res) {
+  res.sendFile(path.join(__dirname, '../client', 'public', 'game.html'));
+})
 
 io.on('connection', function(socket){
-  //Do something here
+  socket.on('new-player', function(data) {
+    socket.join(data.gameRoom);
+  });
+  socket.on('test-emit', function(data) {
+    console.log(data);
+  });
 });
 
 
