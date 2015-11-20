@@ -17,7 +17,7 @@ $(document).ready(function () {
     event.preventDefault();
     // var x = (event.originalEvent.targetTouches[0].clientX);
     var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('test-emit', true)
+    socket.emit('gameUpdate', true)
     // updatePlayerXY(x, y);
   });
 
@@ -25,7 +25,7 @@ $(document).ready(function () {
     event.preventDefault();
     // var x = (event.originalEvent.targetTouches[0].clientX);
     var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('test-emit', y)
+    socket.emit('gameUpdate', y)
     // updatePlayerXY(x, y);
   });
 
@@ -33,7 +33,7 @@ $(document).ready(function () {
     event.preventDefault();
     // var x = (event.originalEvent.targetTouches[0].clientX);
     var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('test-emit', y)
+    socket.emit('gameUpdate', y)
     // updatePlayerXY(x, y);
   });
 

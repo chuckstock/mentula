@@ -36,11 +36,12 @@ app.get('/game', function(req, res) {
 })
 
 io.on('connection', function(socket){
+
   socket.on('new-player', function(data) {
     socket.join(data.gameRoom);
   });
-  socket.on('test-emit', function(data) {
-    console.log(data);
+  socket.on('gameUpdate', function(data) {
+    io.emit('gameUpdate', data);
   });
 });
 
