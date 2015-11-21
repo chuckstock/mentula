@@ -6,39 +6,69 @@ $(document).ready(function () {
   var player = {
       id: Math.floor((Math.random() * 10000) + 10000),
       gameRoom: parseInt(sessionStorage.getItem('game-room'), 10),
-      rotation: 0,
       centerX: 0,
       centerY: 0,
       speedX: 0,
-      speedY: 0
+      speedY: 0,
+      rightTrack: 1, // 0 - reverse, 1 - neutral, 2 - forward
+      leftTrack: 1,
+      isFiring: false
   };
+  var left = 1;
+  var right = 1;
+  var fire = false;
 
   $('#fire').on('touchstart', function (event) {
     event.preventDefault();
-    // var x = (event.originalEvent.targetTouches[0].clientX);
-    var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('gameUpdate', true)
-    // updatePlayerXY(x, y);
+    fire = true;
+  });
+
+  $('#fire').on('touchend', function (event) {
+    event.preventDefault();
+    fire = false;
   });
 
   $('#left-track').on('touchmove', function (event) {
     event.preventDefault();
-    // var x = (event.originalEvent.targetTouches[0].clientX);
-    var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('gameUpdate', y)
-    // updatePlayerXY(x, y);
+    left = (event.originalEvent.targetTouches[0].clientY);
+    var center = $('#left-track').height() / 2;
+    if (left > center + 50) {
+      left = 0;
+    } else if (left < center - 50){
+      left = 2;
+    } else {
+      left = 1;
+    }
   });
+  $('#left-track').on('touchend', function (event) {
+    event.preventDefault();
+    left = 1;
+  });
+
 
   $('#right-track').on('touchmove', function (event) {
     event.preventDefault();
-    // var x = (event.originalEvent.targetTouches[0].clientX);
-    var y = (event.originalEvent.targetTouches[0].clientY);
-    socket.emit('gameUpdate', y)
-    // updatePlayerXY(x, y);
+    right = (event.originalEvent.targetTouches[0].clientY);
+    var center = $('#right-track').height() / 2;
+    if (right > center + 50) {
+      right = 0;
+    } else if (right < center - 50){
+      right = 2;
+    } else {
+      right = 1;
+    }
   });
 
+  $('#right-track').on('touchend', function (event) {
+    event.preventDefault();
+    right = 1;
+  });
 
+  setInterval(updateGame, 20)
 
+  function updateGame() {
+    socket.emit('gameUpdate', {right: right, left: left, fire: fire});
+  }
 
   $('controller button').on('click', function() {
     //grab game id from input
