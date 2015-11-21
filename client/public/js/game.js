@@ -24,22 +24,31 @@ function Tank(game) {
 
 }
 
+// function getReverseFromAngle(angle) {
+//     if (angle > 0) {
+//         return angle - 180;
+//     } else {
+//         return angle + 180;
+//     }
+// }
+
 Tank.prototype = {
     update: function () {
         if (inputs[this.controller].left === 2 && inputs[this.controller].right === 2) {
             // Both tracks moving forward, move the tank forward
-            game.physics.arcade.velocityFromRotation(this.sprite.rotation, this.velocity, this.sprite.body.velocity);
+            game.physics.arcade.velocityFromAngle(this.sprite.angle, this.velocity, this.sprite.body.velocity);
         } else if (inputs[this.controller].left === 0 && inputs[this.controller].right === 0) {
-            game.physics.arcade.velocityFromRotation(this.sprite.rotation + 12, this.velocity, this.sprite.body.velocity);
-            console.log(this.sprite.rotation, this.sprite.angle)
+            var reverse = this.sprite.angle > 0 ? this.sprite.angle - 180 : this.sprite.angle + 180;
+            game.physics.arcade.velocityFromAngle(reverse, this.velocity, this.sprite.body.velocity);
         } else if (inputs[this.controller].left === 2 && inputs[this.controller].right === 1) {
-            this.sprite.rotation += 0.05;
-            game.physics.arcade.velocityFromRotation(this.sprite.rotation, 0, this.sprite.body.velocity);
+            this.sprite.angle += 1;
+            game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
         } else if (inputs[this.controller].left === 1 && inputs[this.controller].right === 2) {
-            this.sprite.rotation -= 0.05;
-            game.physics.arcade.velocityFromRotation(this.sprite.rotation, 0, this.sprite.body.velocity);
+            this.sprite.angle -= 1;
+            game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
         } else {
-            game.physics.arcade.velocityFromRotation(this.sprite.rotation, 0, this.sprite.body.velocity);
+            this.sprite.body.angularVelocity = 0;
+            game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
         }
 
     },
