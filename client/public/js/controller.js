@@ -17,6 +17,7 @@ $(document).ready(function () {
   var left = 1;
   var right = 1;
   var fire = false;
+  var player = 0;
 
   $('#fire').on('touchstart', function (event) {
     event.preventDefault();
@@ -67,7 +68,7 @@ $(document).ready(function () {
   setInterval(updateGame, 20)
 
   function updateGame() {
-    socket.emit('gameUpdate', {right: right, left: left, fire: fire});
+    socket.emit('gameUpdate', {right: right, left: left, fire: fire, player: player});
   }
 
   $('controller button').on('click', function() {
