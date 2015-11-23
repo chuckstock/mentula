@@ -20,4 +20,9 @@ $(document).on('ready', function() {
   socket.on('player-joined', function(data) {
     console.log(data);
   });
+  socket.on('start-game', function() {
+    console.log('starting game');
+    $('.container').hide();
+    startGame();
+  })
 });

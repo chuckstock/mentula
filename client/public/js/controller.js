@@ -18,15 +18,21 @@ $(document).ready(function () {
   var left = 1;
   var right = 1;
   var fire = false;
-  var player = 0;
+  var player;
 
   //** JOIN GAME ROOM **//
   $('#join').on('click', function() {
     var gameRoom = $('#user-input').val();
     socket.emit('new-player', {gameRoom: gameRoom});
 
+    socket.on('success-join', function(playerNum) {
+      player = playerNum;
+    })
     $('#game-room-input').hide();
     $('#controls').show();
+    if (player) {
+      setInterval(updateGame, 20)
+    }
   });
 
   //** CONTROLLER **//
@@ -76,7 +82,7 @@ $(document).ready(function () {
     right = 1;
   });
 
-  setInterval(updateGame, 20)
+
 
   function updateGame() {
     socket.emit('game-update', {right: right, left: left, fire: fire, player: player});

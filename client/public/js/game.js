@@ -1,14 +1,15 @@
+function startGame() {
 // Array to track inputs coming from the server. Server gets the inputs from the phone.
 var inputs = []
 
 // Tank object constructor.
-function Tank(game) {
+function Tank(game, controller) {
     this.game = game;
     var x = game.world.randomX;
     var y = game.world.randomY;
     this.velocity = 50;
     // Controller is the index of input array where this tanks inputs are stored.
-    this.controller = 0;
+    this.controller = controller;
     this.sprite = game.add.sprite(x, y, 'tank');
     //set initial angle
     this.sprite.angle = -90;
@@ -60,7 +61,10 @@ var players = [];
 var bullets;
 var land;
 var explosions;
-var inputs = [{left: 1, right: 1, fire: false}];
+var inputs = [
+  {left: 1, right: 1, fire: false},
+  {left: 1, right: 1, fire: false}
+];
 
 function preload() {
     game.load.image('land', 'assets/land.png');
@@ -72,7 +76,8 @@ function create() {
     socket.on('game-update', function(data) {
         inputs[data.player] = data;
     });
-    players.push(new Tank(game));
+    players.push(new Tank(game, 0));
+    players.push(new Tank(game, 1));
     initPhysics();
 }
 
@@ -89,4 +94,5 @@ function render() {
 function initPhysics() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+}
 }

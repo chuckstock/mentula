@@ -42,23 +42,26 @@ io.on('connection', function(socket){
   socket.on('new-player', function(data) {
     socket.join(data.gameRoom);
     socket.room = data.gameRoom;
-    io.sockets.in(rooms[socket.room]).emit('player-joined', 'test');
+    // console.log(rooms[socket.room].room);
+    io.sockets.in(rooms[socket.room].id).emit('player-joined', 'test');
     if (rooms[data.gameRoom].players) {
       rooms[data.gameRoom].players++;
     } else {
       rooms[data.gameRoom].players = 1;
     }
-    
-    if (rooms[data.gameRoom].players >= 1) {
-      io.sockets.in(rooms[socket.room]).emit('start-game')
+    socket.emit('success-join', rooms[data.gameRoom].players - 1)
+    if (rooms[data.gameRoom].players > 1) {
+      io.sockets.in(rooms[socket.room].id).emit('start-game')
+      console.log('emitting start game: ' + rooms)
     }
   });
   socket.on('game-update', function(data) {
-    io.sockets.in(rooms[socket.room]).emit('game-update', data);
+    io.sockets.in(rooms[socket.room].id).emit('game-update', data);
   });
   socket.on('create-game', function(data) {
     // data.gameRoom & data.viewerId
-    rooms[data.gameRoom] = data.viewerId;
+    rooms[data.gameRoom] = {id:data.viewerId}
+    console.log(rooms);
     socket.join(data.viewerId);
   });
 
