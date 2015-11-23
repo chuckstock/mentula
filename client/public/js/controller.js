@@ -4,17 +4,6 @@ $(document).ready(function () {
   var socket = io();
   var viewportWidth = $(window).width();
   var viewportHeight = $(window).height();
-  var player = {
-      id: Math.floor((Math.random() * 10000) + 10000),
-      gameRoom: parseInt(sessionStorage.getItem('game-room'), 10),
-      centerX: 0,
-      centerY: 0,
-      speedX: 0,
-      speedY: 0,
-      rightTrack: 1, // 0 - reverse, 1 - neutral, 2 - forward
-      leftTrack: 1,
-      isFiring: false
-  };
   var left = 1;
   var right = 1;
   var fire = false;
@@ -23,13 +12,19 @@ $(document).ready(function () {
   //** JOIN GAME ROOM **//
   $('#join').on('click', function() {
     var gameRoom = $('#user-input').val();
+
+    // sends new-player event to server to join controller to game room
     socket.emit('new-player', {gameRoom: gameRoom});
 
+    // listens for success-join from server and assigns controller a player number
     socket.on('success-join', function(playerNum) {
       player = playerNum;
     })
+
     $('#game-room-input').hide();
     $('#controls').show();
+
+    // once player has joined and receives a player number, call the updateGame function every 20ms
     if (player) {
       setInterval(updateGame, 20)
     }
@@ -58,11 +53,11 @@ $(document).ready(function () {
       left = 1;
     }
   });
+
   $('#left-track').on('touchend', function (event) {
     event.preventDefault();
     left = 1;
   });
-
 
   $('#right-track').on('touchmove', function (event) {
     event.preventDefault();
@@ -82,16 +77,8 @@ $(document).ready(function () {
     right = 1;
   });
 
-
-
   function updateGame() {
+    // sends game-update to server with the players input and player number
     socket.emit('game-update', {right: right, left: left, fire: fire, player: player});
   }
-
-  $('controller button').on('click', function() {
-    //grab game id from input
-    socket.emit('new-player', {
-      gameRoom: gameRoom,
-    });
-  });
 });
