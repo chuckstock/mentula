@@ -24,10 +24,8 @@ $(document).ready(function () {
     $('#game-room-input').hide();
     $('#controls').show();
 
-    // once player has joined and receives a player number, call the updateGame function every 20ms
-    if (player) {
-      setInterval(updateGame, 20)
-    }
+    setInterval(updateGame, 20)
+
   });
 
   //** CONTROLLER **//

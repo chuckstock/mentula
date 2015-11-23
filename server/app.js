@@ -57,7 +57,7 @@ io.on('connection', function(socket){
     socket.emit('success-join', rooms[data.gameRoom].players - 1)
 
     // check to see if there is more than one player, to start the game then emits start-game event to viewer
-    if (rooms[data.gameRoom].players > 1) {
+    if (rooms[data.gameRoom].players >= 1) {
       io.sockets.in(rooms[socket.room].id).emit('start-game')
     }
   });
