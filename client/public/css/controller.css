@@ -1,4 +1,4 @@
-html, body {
+html, body, #controls {
   background-color: black;
   height: 100%
 
@@ -11,6 +11,7 @@ html, body {
 }
 
 #fire {
-  background: black;
+  background-image: url(http://www.online-utility.org/image/ImageCache?file=4/4f/Button-Red.svg/800px-Button-Red.svg);
+  background-size: cover;
   min-height: 100%;
 }

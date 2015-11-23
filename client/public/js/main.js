@@ -1,16 +1,23 @@
 // custom scripts
 
 var socket = io();
+$(document).on('ready', function() {
+  $('#game-room').hide();
+  $('#createGame').on('click', function() {
+    $('#createGame').hide();
 
+    // Set gameRoom
+    var gameRoom = Math.floor((Math.random() * 10000) + 10000);
 
-$('#createGame').on('click', function() {
-  // Set gameRoom
-  var gameRoom = sessionStorage.getItem('game-room') || Math.floor((Math.random() * 10000) + 10000);
-  sessionStorage.setItem('game-room', gameRoom);
+    // Set viewerId
+    var viewerId = Math.floor((Math.random() * 10000) + 10000);
 
-  // Set viewerId
-  var viewerId = sessionStorage.getItem('viewer-id') || Math.floor((Math.random() * 10000) + 10000);
-  sessionStorage.setItem('viewer-id', viewerId);
+    socket.emit('create-game', {gameRoom: gameRoom, viewerId: viewerId});
 
-
+    $('#game-room-code').text(gameRoom);
+    $('#game-room').show();
+  });
+  socket.on('player-joined', function(data) {
+    console.log(data);
+  });
 });

@@ -35,14 +35,33 @@ app.get('/game', function(req, res) {
   res.sendFile(path.join(__dirname, '../client', 'public', 'game.html'));
 })
 
+var rooms = {};
+
 io.on('connection', function(socket){
 
   socket.on('new-player', function(data) {
     socket.join(data.gameRoom);
+    socket.room = data.gameRoom;
+    io.sockets.in(rooms[socket.room]).emit('player-joined', 'test');
+    if (rooms[data.gameRoom].players) {
+      rooms[data.gameRoom].players++;
+    } else {
+      rooms[data.gameRoom].players = 1;
+    }
+    
+    if (rooms[data.gameRoom].players >= 1) {
+      io.sockets.in(rooms[socket.room]).emit('start-game')
+    }
   });
-  socket.on('gameUpdate', function(data) {
-    io.emit('gameUpdate', data);
+  socket.on('game-update', function(data) {
+    io.sockets.in(rooms[socket.room]).emit('game-update', data);
   });
+  socket.on('create-game', function(data) {
+    // data.gameRoom & data.viewerId
+    rooms[data.gameRoom] = data.viewerId;
+    socket.join(data.viewerId);
+  });
+
 });
 
 

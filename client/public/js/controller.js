@@ -1,5 +1,6 @@
 
 $(document).ready(function () {
+  $('#controls').hide();
   var socket = io();
   var viewportWidth = $(window).width();
   var viewportHeight = $(window).height();
@@ -19,6 +20,16 @@ $(document).ready(function () {
   var fire = false;
   var player = 0;
 
+  //** JOIN GAME ROOM **//
+  $('#join').on('click', function() {
+    var gameRoom = $('#user-input').val();
+    socket.emit('new-player', {gameRoom: gameRoom});
+
+    $('#game-room-input').hide();
+    $('#controls').show();
+  });
+
+  //** CONTROLLER **//
   $('#fire').on('touchstart', function (event) {
     event.preventDefault();
     fire = true;
@@ -68,7 +79,7 @@ $(document).ready(function () {
   setInterval(updateGame, 20)
 
   function updateGame() {
-    socket.emit('gameUpdate', {right: right, left: left, fire: fire, player: player});
+    socket.emit('game-update', {right: right, left: left, fire: fire, player: player});
   }
 
   $('controller button').on('click', function() {
