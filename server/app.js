@@ -24,6 +24,10 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../client', 'public', 'index.html'));
 });
 
+// app.get('/menu', function(req, res) {
+//   res.sendFile(path.join(__dirname, '../client', 'public', 'menutest.html'));
+// });
+
 app.get('/controller', function(req, res) {
   //Serve up phone page here.
   res.sendFile(path.join(__dirname, '../client', 'public', 'controller.html'));

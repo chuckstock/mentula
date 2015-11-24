@@ -1,0 +1,5 @@
+function Menu() {};
+
+Menu.prototype = {
+  
+}
