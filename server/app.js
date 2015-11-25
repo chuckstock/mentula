@@ -31,11 +31,11 @@ app.get('/', function(req, res) {
 app.get('/controller', function(req, res) {
   //Serve up phone page here.
   res.sendFile(path.join(__dirname, '../client', 'public', 'controller.html'));
-})
+});
 
 app.get('/game', function(req, res) {
   res.sendFile(path.join(__dirname, '../client', 'public', 'game.html'));
-})
+});
 
 //** SOCKET.IO STUFFS **//
 var io = require('socket.io')(server);
@@ -58,23 +58,26 @@ io.on('connection', function(socket){
     }
 
     //send unqiue player identifier to controller
-    socket.emit('success-join', rooms[data.gameRoom].players - 1)
+    socket.emit('success-join', rooms[data.gameRoom].players - 1);
 
     // check to see if there is more than one player, to start the game then emits start-game event to viewer
     if (rooms[data.gameRoom].players >= 1) {
-      io.sockets.in(rooms[socket.room].id).emit('start-game')
+      io.sockets.in(rooms[socket.room].id).emit('start-game');
     }
   });
 
   // listens for game-update from controller and emits update to viewer
   socket.on('game-update', function(data) {
-    io.sockets.in(rooms[socket.room].id).emit('game-update', data);
+    if (rooms[socket.room]) {
+      io.sockets.in(rooms[socket.room].id).emit('game-update', data);
+    }
   });
 
   // listens for create-game from viewer and creates a unique game room on the server
   socket.on('create-game', function(data) {
     // data.gameRoom & data.viewerId
-    rooms[data.gameRoom] = {id:data.viewerId}
+    console.log('Creating Game: ' + data.gameRoom);
+    rooms[data.gameRoom] = {id:data.viewerId};
     socket.join(data.viewerId);
   });
 

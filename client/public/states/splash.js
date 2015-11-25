@@ -1,15 +1,23 @@
-function Splash() {};
+function Splash() {}
 
 Splash.prototype = {
   loadScripts: function () {
+    game.load.script('WebFont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js');
     game.load.script('gamemenu','states/menu.js');
     game.load.script('game', 'states/game.js');
     game.load.script('gameover','states/gameover.js');
   },
-
   loadImages: function () {
-    game.load.image('menu-bg', 'assets/goodbackground.jpg');
+    game.load.image('menu-bg', 'assets/okaybackground.jpg');
     game.load.image('gameover-bg', 'assets/background.jpg');
+  },
+  loadFonts: function () {
+    WebFontConfig = {
+      custom: {
+        families: ['MGS', 'CS'],
+        urls: ['assets/styles/mgs.css', 'assets/styles/cyber-space.css']
+      }
+    };
   },
   init: function() {
     this.loadingBar = game.make.sprite(game.world.centerX-(387/2), 400, "loading");
@@ -20,9 +28,6 @@ Splash.prototype = {
     this.status.anchor.setTo(0.5);
   },
 
-  // loadFonts: function () {
-  // },
-  //
   // The preload function then will call all of the previously defined functions:
   preload: function () {
     game.add.sprite(0, 0, 'background');
@@ -33,19 +38,19 @@ Splash.prototype = {
 
     this.loadScripts();
     this.loadImages();
-    // this.loadFonts();
+    this.loadFonts();
   },
   addGameStates: function() {
-    game.state.add("Menu", Menu);
-    game.state.add("Game", Game);
-    game.state.add("GameOver", GameOver);
+    game.state.add('Menu', Menu);
+    game.state.add('Game', Game);
+    game.state.add('GameOver', GameOver);
   },
   create: function() {
     this.status.setText('Ready!');
     this.addGameStates();
 
     setTimeout(function() {
-
-    }, 5000);
+      game.state.start('Menu');
+    }, 1000);
   }
-}
+};
