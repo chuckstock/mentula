@@ -17,13 +17,16 @@ Game.prototype = {
   },
 
   preload: function() {
-    game.load.image('land', 'assets/land.png');
+    game.load.image('land', 'assets/floortile2.png');
     game.load.image('bullet', 'assets/bullet.png');
     game.load.spritesheet('tank', 'assets/tanksheet.png', 42, 40);
   },
 
   create: function() {
     land = game.add.tileSprite(0, 0, 800, 600, 'land');
+    land.tint = 0x5396ac;
+    land.filters = [ this.game.add.filter('Glow') ];
+
     socket.on('game-update', function(data) {
       inputs[data.player] = data;
     });
@@ -74,6 +77,7 @@ function Tank(game, controller) {
   this.sprite.body.drag.set(0.2);
   this.sprite.body.maxVelocity.set(100);
   this.sprite.tint = 0x66ff66;
+  this.sprite.filters = [ this.game.add.filter('Glow') ];
 
 }
 
@@ -117,4 +121,36 @@ Tank.prototype = {
       }
     }
   },
-}
+};
+
+Phaser.Filter.Glow = function (game) {
+    Phaser.Filter.call(this, game);
+
+    this.fragmentSrc = [
+        "precision lowp float;",
+        "varying vec2 vTextureCoord;",
+        "varying vec4 vColor;",
+        'uniform sampler2D uSampler;',
+
+        'void main() {',
+            'vec4 sum = vec4(0);',
+            'vec2 texcoord = vTextureCoord;',
+            'for(int xx = -4; xx <= 4; xx++) {',
+                'for(int yy = -3; yy <= 3; yy++) {',
+                    'float dist = sqrt(float(xx*xx) + float(yy*yy));',
+                    'float factor = 0.0;',
+                    'if (dist == 0.0) {',
+                        'factor = 2.0;',
+                    '} else {',
+                        'factor = 2.0/abs(float(dist));',
+                    '}',
+                    'sum += texture2D(uSampler, texcoord + vec2(xx, yy) * 0.002) * factor;',
+                '}',
+            '}',
+            'gl_FragColor = sum * 0.025 + texture2D(uSampler, texcoord);',
+        '}'
+    ];
+};
+
+Phaser.Filter.Glow.prototype = Object.create(Phaser.Filter.prototype);
+Phaser.Filter.Glow.prototype.constructor = Phaser.Filter.Glow;
