@@ -19,12 +19,12 @@ $(document).ready(function () {
     // listens for success-join from server and assigns controller a player number
     socket.on('success-join', function(playerNum) {
       player = playerNum;
-    })
+    });
 
     $('#game-room-input').hide();
     $('#controls').show();
 
-    setInterval(updateGame, 20)
+    setInterval(updateGame, 20);
 
   });
 
