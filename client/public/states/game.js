@@ -1,5 +1,5 @@
 //** GLOBALS **//
-var socket = io();
+// var socket = io();
 var players = [];
 var bullets;
 var land;
@@ -9,11 +9,12 @@ var inputs = [
   //   {left: 1, right: 1, fire: false}
 ];
 
-function Game() {}
+function Game() {
+}
 
 Game.prototype = {
-  init: function() {
-
+  init: function(poop) {
+      console.log(poop);
   },
 
   preload: function() {

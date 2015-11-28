@@ -24,10 +24,6 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../client', 'public', 'index.html'));
 });
 
-// app.get('/menu', function(req, res) {
-//   res.sendFile(path.join(__dirname, '../client', 'public', 'menutest.html'));
-// });
-
 app.get('/controller', function(req, res) {
   //Serve up phone page here.
   res.sendFile(path.join(__dirname, '../client', 'public', 'controller.html'));
@@ -48,7 +44,6 @@ io.on('connection', function(socket){
   socket.on('new-player', function(data) {
     socket.join(data.gameRoom);
     socket.room = data.gameRoom;
-    io.sockets.in(rooms[socket.room].id).emit('player-joined', 'test');
 
     //check to see how many players have joined the game room
     if (rooms[data.gameRoom].players) {
@@ -56,7 +51,8 @@ io.on('connection', function(socket){
     } else {
       rooms[data.gameRoom].players = 1;
     }
-
+    console.log('Phone Controller: room ' + data.gameRoom)
+    io.sockets.in(rooms[socket.room].id).emit('player-joined', rooms[data.gameRoom].players);
     //send unqiue player identifier to controller
     socket.emit('success-join', rooms[data.gameRoom].players - 1);
 
@@ -65,6 +61,16 @@ io.on('connection', function(socket){
       io.sockets.in(rooms[socket.room].id).emit('start-game');
     }
   });
+
+  socket.on('gamepad-player', function(data) {
+      if (rooms[data.gameRoom].players) {
+        rooms[data.gameRoom].players++;
+      } else {
+        rooms[data.gameRoom].players = 1;
+      }
+      console.log('Gamepad: room ' + data.gameRoom);
+  });
+
 
   // listens for game-update from controller and emits update to viewer
   socket.on('game-update', function(data) {
