@@ -23,9 +23,7 @@ Menu.prototype = {
         this.instructions.anchor.setTo(0.5);
         game.input.gamepad.start();
         game.input.gamepad.onConnectCallback = function() {
-            self.playerCount++;
             socket.emit('gamepad-player', {gameRoom: self.gameRoom})
-            self.addPlayerBox();
         }
         game.input.gamepad.onDisconnectCallback = function() {
             self.playerCount--;
@@ -39,15 +37,15 @@ Menu.prototype = {
         game.add.existing(this.titleText);
         game.add.existing(this.instructions);
         socket.on('player-joined', function(data) {
-            self.playerCount++;
+            self.playerCount ? self.playerCount++ : self.playerCount = 1;
             self.addPlayerBox();
             if (self.playerCount >= 1) {
                 self.addMenuStart();
             }
         });
         this.createMenu = this.addMenuCreate();
-        for (var i = 1; i <= this.playerCount; i++) {
-            self.addPlayerBox(i)
+        for (var i = 1; i <= game.input.gamepad.padsConnected; i++) {
+            socket.emit('gamepad-player', {gameRoom: self.gameRoom});
         }
     },
     addMenuCreate: function() {
@@ -105,7 +103,7 @@ Menu.prototype = {
             target.stroke = "rgba(0,0,0,0)";
         };
         var onClick = function() {
-            game.state.start('Game', false, false, 'fuckyou');
+            game.state.start('Game', false, false, self.playerCount);
         };
         txt.stroke = "rgba(0,0,0,0";
         txt.strokeThickness = 4;
@@ -115,7 +113,7 @@ Menu.prototype = {
         txt.events.onInputOut.add(onOut);
     },
     addPlayerBox: function() {
-        game.add.text(this.playerCount*80, 500, this.playerCount + ' ', {
+        game.add.text(this.playerCount*80, 500, ' ' + this.playerCount + ' ', {
             font: 'bold 20pt CS',
             fill: '#30DEF8',
             align: 'center',
@@ -123,7 +121,7 @@ Menu.prototype = {
         });
     },
     preload: function () {
-        this.playerCount = game.input.gamepad.padsConnected;
+        this.playerCount;
     },
     update: function() {
 

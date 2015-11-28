@@ -4,23 +4,32 @@ var players = [];
 var bullets;
 var land;
 var explosions;
-var inputs = [
-  {left: 1, right: 1, fire: false},
-  //   {left: 1, right: 1, fire: false}
-];
+var inputs = [];
 
 function Game() {
+    this.playerCount;
+    this.gamepads = [];
 }
 
 Game.prototype = {
-  init: function(poop) {
-      console.log(poop);
+  init: function(playerCount) {
+      this.playerCount = playerCount;
+      console.log(playerCount);
+      for (var i = 0; i <= playerCount; i++) {
+          inputs.push({left: 1, right: 1, fire: false})
+      }
+      for (var i = 0; i < game.input.gamepad.padsConnected; i++) {
+          this.gamepads.push({pad: game.input.gamepad['pad'+(i+1)], player: i})
+      }
   },
 
   preload: function() {
     game.load.image('land', 'assets/floortile2.png');
     game.load.image('bullet', 'assets/bullet.png');
-    game.load.spritesheet('tank', 'assets/tanksheet.png', 42, 40);
+    game.load.spritesheet('tank1', 'assets/tanksheet.png', 42, 40);
+    game.load.spritesheet('tank2', 'assets/tanksheet2.png', 42, 40);
+    game.load.spritesheet('tank3', 'assets/tanksheet3.png', 42, 40);
+    game.load.spritesheet('tank4', 'assets/tanksheet4.png', 42, 40);
   },
 
   create: function() {
@@ -31,8 +40,9 @@ Game.prototype = {
     socket.on('game-update', function(data) {
       inputs[data.player] = data;
     });
-    players.push(new Tank(game, 0));
-    // players.push(new Tank(game, 1));
+    for (var i = 0; i < this.playerCount; i++) {
+        players.push(new Tank(game, i));
+    }
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     bullets = game.add.group();
@@ -43,14 +53,45 @@ Game.prototype = {
     bullets.setAll('anchor.y', 0.5);
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
+    bullets.setAll('filters',[ this.game.add.filter('Glow') ]);
   },
-  update: function() {
-    for (var i = 0; i < players.length; i++) {
-      // console.log(inputs);
-      players[i].update()
+    update: function() {
+        this.getGamepadInput();
+        for (var i = 0; i < players.length; i++) {
+            // console.log(inputs);
+            players[i].update()
+        }
+        // game.physics.arcade.collide(players[0].sprite, players[1].sprite);
+    },
+    getGamepadInput: function() {
+        //   console.log(this.gamepads);
+        for (var i = 0; i < this.gamepads.length; i++) {
+            var pad = this.gamepads[i].pad;
+            var player = this.gamepads[i].player;
+            console.log(pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y));
+            if (pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.5) {
+                inputs[player].left = 2;
+            } else if (pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.5) {
+                inputs[player].left = 0;
+            } else {
+                inputs[player].left = 1;
+            }
+            if (pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y) < -0.5) {
+                inputs[player].right = 2;
+            } else if (pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y) > 0.5) {
+                inputs[player].right = 0;
+            } else {
+                inputs[player].right = 1;
+            }
+            if (pad.isDown(Phaser.Gamepad.XBOX360_A)) {
+                inputs[player].fire = true;
+            } else {
+                inputs[player].fire = false;
+            }
+
+        }
+
     }
-    // game.physics.arcade.collide(players[0].sprite, players[1].sprite);
-  },
 };
 
 // Tank object constructor.
@@ -61,7 +102,7 @@ function Tank(game, controller) {
   this.velocity = 75;
   // Controller is the index of input array where this tanks inputs are stored.
   this.controller = controller;
-  this.sprite = game.add.sprite(x, y, 'tank');
+  this.sprite = game.add.sprite(x, y, 'tank1');
   this.sprite.frame = 1;
   this.sprite.animations.add('move', [0,1,2], 10, true);
   // this.sprite.animations.add('move', [0,1,2], 10, true);
