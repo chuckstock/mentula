@@ -104,7 +104,7 @@ function Tank(game, controller) {
   this.nextFire = 0;
   // Controller is the index of input array where this tanks inputs are stored.
   this.controller = controller;
-  this.sprite = game.add.sprite(x, y, 'tank' + this.controller);
+  this.sprite = game.add.sprite(x, y, 'tank' + (this.controller + 2));
   this.sprite.frame = 1;
   this.sprite.animations.add('move', [0,1,2], 10, true);
   // this.sprite.animations.add('move', [0,1,2], 10, true);
@@ -139,12 +139,32 @@ Tank.prototype = {
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 2 && inputs[this.controller].right === 1) {
       // Left track forward, right neutral, turn the tank right.
-      this.sprite.angle += 1;
+      this.sprite.angle += 2;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 1 && inputs[this.controller].right === 2) {
       // Left track neutral, right track forward, turn the tank left.
-      this.sprite.angle -= 1;
+      this.sprite.angle -= 2;
+      game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
+      this.sprite.play('move');
+    } else if (inputs[this.controller].left === 0 && inputs[this.controller].right === 1) {
+      // Left track reverse, right track neutral, turn the tank left.
+      this.sprite.angle -= 2;
+      game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
+      this.sprite.play('move');
+    } else if (inputs[this.controller].left === 1 && inputs[this.controller].right === 0) {
+      // Left track neutral, right track reverse, turn the tank right.
+      this.sprite.angle += 2;
+      game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
+      this.sprite.play('move');
+    } else if (inputs[this.controller].left === 2 && inputs[this.controller].right === 0) {
+      // Left track forward, right track reverse, turn the tank fast right.
+      this.sprite.angle += 4;
+      game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
+      this.sprite.play('move');
+    } else if (inputs[this.controller].left === 0 && inputs[this.controller].right === 2) {
+      // Left track reverse, right track forward, turn the tank fast left.
+      this.sprite.angle -= 4;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else {
