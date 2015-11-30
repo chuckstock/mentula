@@ -219,8 +219,8 @@ Tank.prototype = {
         // console.log((this.sprite.x + 20) * Math.sin(radians), (this.sprite.y + 20) * Math.cos(radians));
         // console.log(this.rotation);
         vector = {};
-        vector.x = 20 * Math.sin(radians);
-        vector.y = 20 * Math.cos(radians);
+        vector.x = 30 * Math.sin(radians);
+        vector.y = 30 * Math.cos(radians);
         console.log(vector, this.sprite.x, this.sprite.y);
         if (this.rotation >= 0 && this.rotation <= 90) {
             bullet.reset(this.sprite.x + vector.x, this.sprite.y - vector.y);
@@ -245,7 +245,7 @@ Tank.prototype = {
 };
 
 function handleBulletCollision(tank, bullet) {
-  // bullet.kill();
+  bullet.kill();
   tank.health -= 50;
 }
 
