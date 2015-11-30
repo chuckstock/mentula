@@ -26,6 +26,9 @@ Game.prototype = {
   preload: function() {
     game.load.image('land', 'assets/floortile2.png');
     game.load.image('bullet', 'assets/bullet.png');
+    game.load.image('tank1debris1', 'assets/tank1debris1.png');
+    game.load.image('tank1debris2', 'assets/tank1debris2.png');
+    game.load.image('tank1debris3', 'assets/tank1debris3.png');
     game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
     game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
     game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
@@ -51,7 +54,6 @@ Game.prototype = {
     bullets.createMultiple(30, 'bullet');
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 0.5);
-    bullets.setAll('lifespan', 2000);
     // bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('body.collideWorldBounds', true);
     bullets.setAll('body.bounce.x', 1);
@@ -78,7 +80,6 @@ Game.prototype = {
         for (var i = 0; i < this.gamepads.length; i++) {
             var pad = this.gamepads[i].pad;
             var player = this.gamepads[i].player;
-            console.log(pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y));
             if (pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.5) {
                 inputs[player].left = 2;
             } else if (pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.5) {
@@ -93,7 +94,7 @@ Game.prototype = {
             } else {
                 inputs[player].right = 1;
             }
-            if (pad.isDown(Phaser.Gamepad.XBOX360_A)) {
+            if (pad.isDown(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER)) {
                 inputs[player].fire = true;
             } else {
                 inputs[player].fire = false;
@@ -115,14 +116,14 @@ function Tank(game, controller) {
   this.game = game;
   var x = game.world.randomX;
   var y = game.world.randomY;
-  this.velocity = 75;
+  this.velocity = 125;
   this.fireRate = 1000;
   this.nextFire = 0;
   this.rotation = 1;
   this.colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
   // Controller is the index of input array where this tanks inputs are stored.
   this.controller = controller;
-  this.sprite = game.add.sprite(x, y, 'tank' + (this.controller + 2));
+  this.sprite = game.add.sprite(x, y, 'tank' + (this.controller + 1));
   this.sprite.health = 100;
   this.sprite.frame = 1;
   this.sprite.animations.add('move', [0,1,2], 10, true);
@@ -147,8 +148,9 @@ function Tank(game, controller) {
 Tank.prototype = {
   update: function () {
     //** Check heatlh **//
-    if (this.sprite.health <= 0) {
-      // this.sprite.kill();
+    if (this.sprite.health <= 0 && this.sprite.alive) {
+      this.sprite.kill();
+      this.die();
       //add explosion animation
     }
     if (this.rotation > 360){
@@ -169,38 +171,38 @@ Tank.prototype = {
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 2 && inputs[this.controller].right === 1) {
       // Left track forward, right neutral, turn the tank right.
-      this.sprite.angle += 2;
-      this.rotation += 2;
+      this.sprite.angle += 1;
+      this.rotation += 1;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 1 && inputs[this.controller].right === 2) {
       // Left track neutral, right track forward, turn the tank left.
-      this.sprite.angle -= 2;
-      this.rotation -= 2;
+      this.sprite.angle -= 1;
+      this.rotation -= 1;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 0 && inputs[this.controller].right === 1) {
       // Left track reverse, right track neutral, turn the tank left.
-      this.sprite.angle -= 2;
-      this.rotation -= 2;
+      this.sprite.angle -= 1;
+      this.rotation -= 1;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 1 && inputs[this.controller].right === 0) {
       // Left track neutral, right track reverse, turn the tank right.
-      this.sprite.angle += 2;
-      this.rotation += 2;
+      this.sprite.angle += 1;
+      this.rotation += 1;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 2 && inputs[this.controller].right === 0) {
       // Left track forward, right track reverse, turn the tank fast right.
-      this.sprite.angle += 4;
-      this.rotation += 4
+      this.sprite.angle += 3;
+      this.rotation += 3
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else if (inputs[this.controller].left === 0 && inputs[this.controller].right === 2) {
       // Left track reverse, right track forward, turn the tank fast left.
-      this.sprite.angle -= 4;
-      this.rotation -= 4;
+      this.sprite.angle -= 3;
+      this.rotation -= 3;
       game.physics.arcade.velocityFromAngle(this.sprite.angle, 0, this.sprite.body.velocity);
       this.sprite.play('move');
     } else {
@@ -219,9 +221,8 @@ Tank.prototype = {
         // console.log((this.sprite.x + 20) * Math.sin(radians), (this.sprite.y + 20) * Math.cos(radians));
         // console.log(this.rotation);
         vector = {};
-        vector.x = 30 * Math.sin(radians);
-        vector.y = 30 * Math.cos(radians);
-        console.log(vector, this.sprite.x, this.sprite.y);
+        vector.x = 33 * Math.sin(radians);
+        vector.y = 33 * Math.cos(radians);
         if (this.rotation >= 0 && this.rotation <= 90) {
             bullet.reset(this.sprite.x + vector.x, this.sprite.y - vector.y);
         } else if (this.rotation > 90 && this.rotation <= 180) {
@@ -231,6 +232,7 @@ Tank.prototype = {
         } else if (this.rotation > 270 && this.rotation <= 360) {
           bullet.reset(this.sprite.x + vector.x, this.sprite.y - vector.y);
         }
+        bullet.lifespan = 2000;
 
         // bullet.reset(this.sprite.x, this.sprite.y);
         bullet.angle = this.sprite.angle;
@@ -242,6 +244,28 @@ Tank.prototype = {
       }
     }
   },
+  die: function() {
+      var piece1 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank1debris1');
+      var piece2 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank1debris2');
+      var piece3 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank1debris3');
+      game.physics.enable(piece1, Phaser.Physics.ARCADE);
+      game.physics.enable(piece2, Phaser.Physics.ARCADE);
+      game.physics.enable(piece3, Phaser.Physics.ARCADE);
+      piece1.anchor.set(0.5, 0.5);
+      piece2.anchor.set(0.5, 0.5);
+      piece3.anchor.set(0.5, 0.5);
+      piece1.tint = this.sprite.tint;
+      piece2.tint = this.sprite.tint;
+      piece3.tint = this.sprite.tint;
+
+
+      game.physics.arcade.velocityFromAngle(100, 200, piece1.body.velocity);
+      game.physics.arcade.velocityFromAngle(-85, 200, piece2.body.velocity);
+      game.physics.arcade.velocityFromAngle(0, 200, piece3.body.velocity);
+      piece1.body.angularVelocity = 400;
+      piece2.body.angularVelocity = 400;
+      piece3.body.angularVelocity = 400;
+  }
 };
 
 function handleBulletCollision(tank, bullet) {
