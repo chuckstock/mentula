@@ -5,6 +5,9 @@ var bullets;
 var land;
 var explosions;
 var inputs = [];
+var manager = null;
+var emitter = null;
+var image = null;
 
 function Game() {
     this.playerCount;
@@ -29,6 +32,7 @@ Game.prototype = {
     game.load.image('tank1debris1', 'assets/tank1debris1.png');
     game.load.image('tank1debris2', 'assets/tank1debris2.png');
     game.load.image('tank1debris3', 'assets/tank1debris3.png');
+    game.load.image('tankBurst', 'assets/tank-burst.png');
     game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
     game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
     game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
@@ -47,6 +51,9 @@ Game.prototype = {
         players.push(new Tank(game, i));
     }
     game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    emitter = game.add.group();
+
 
     bullets = game.add.group();
     bullets.enableBody = true;
@@ -74,6 +81,9 @@ Game.prototype = {
             game.physics.arcade.collide(players[k].sprite, players[l].sprite);
           }
         }
+        emitter.forEachAlive(function(p){
+  		    p.alpha= p.lifespan / emitter.lifespan;
+  	    });
     },
     getGamepadInput: function() {
         //   console.log(this.gamepads);
@@ -105,11 +115,6 @@ Game.prototype = {
     }
 };
 
-// function Bullet(vector) {
-//   this.vector = vector;
-//   this.center = center;
-//   this.sprite = game.add.sprite(vector.x, vector.y, 'bullet');
-// }
 
 // Tank object constructor.
 function Tank(game, controller) {
@@ -258,13 +263,23 @@ Tank.prototype = {
       piece2.tint = this.sprite.tint;
       piece3.tint = this.sprite.tint;
 
+      emitter = game.add.emitter(this.sprite.x, this.sprite.y, 200);
+
+      emitter.makeParticles('tankBurst');
+      emitter.lifespan = 2000
+
+      emitter.start(true, 1000, null, 300);
+
+
+
+
 
       game.physics.arcade.velocityFromAngle(100, 200, piece1.body.velocity);
       game.physics.arcade.velocityFromAngle(-85, 200, piece2.body.velocity);
       game.physics.arcade.velocityFromAngle(0, 200, piece3.body.velocity);
-      piece1.body.angularVelocity = 400;
-      piece2.body.angularVelocity = 400;
-      piece3.body.angularVelocity = 400;
+      piece1.body.angularVelocity = 800;
+      piece2.body.angularVelocity = 800;
+      piece3.body.angularVelocity = 800;
   }
 };
 
