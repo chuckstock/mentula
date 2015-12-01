@@ -3,11 +3,10 @@
 var players = [];
 var bullets;
 var land;
-var explosions;
+var obstacles;
 var inputs = [];
-var manager = null;
 var emitter = null;
-var image = null;
+
 
 function Game() {
   this.playerCount;
@@ -27,7 +26,7 @@ Game.prototype = {
   },
 
   preload: function() {
-    game.load.image('land', 'assets/floortile2.png');
+    game.load.image('land', 'assets/floortile3.png');
     game.load.image('bullet', 'assets/bullet.png');
 
     //tank debris
@@ -49,12 +48,20 @@ Game.prototype = {
     game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
     game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
     game.load.spritesheet('tank3', 'assets/tanksheet4.png', 42, 40);
+
+    // Obstacle assets
+    game.load.image('obstacleSquare', 'assets/obstacle-square.png');
+    game.load.image('obstacleL1', 'assets/obstacle-L1.png');
+    game.load.image('obstacleL2', 'assets/obstacle-L2.png');
+
   },
 
   create: function() {
-    land = game.add.tileSprite(0, 0, window.innerHeight - 10, window.innerHeight - 10, 'land');
+    land = game.add.sprite(0, 0, 'land');
     land.tint = 0x5396ac;
     land.filters = [ this.game.add.filter('Glow') ];
+    land.height = window.innerHeight;
+    land.width = window.innerHeight;
 
     socket.on('game-update', function(data) {
       inputs[data.player] = data;
@@ -65,7 +72,13 @@ Game.prototype = {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     emitter = game.add.group();
+    obstacles = game.add.group();
 
+    // for (var i = 1; i <= 4; i++) {
+    //     for (var j = 0; j < 3; j++) {
+            new ObstacleSquare(50,50, 0.5)
+    //     }
+    // }
 
     bullets = game.add.group();
     bullets.enableBody = true;
@@ -88,7 +101,9 @@ Game.prototype = {
         game.physics.arcade.overlap(bullets, players[i].sprite, handleBulletCollision, null, this);
       }
     }
+    game.physics.arcade.collide(bullets, obstacles);
     for (var k = 0; k < players.length; k++) {
+        game.physics.arcade.collide(players[k].sprite, obstacles);
       for (var l = 0; l < players.length; l++) {
         game.physics.arcade.collide(players[k].sprite, players[l].sprite);
       }
@@ -128,13 +143,39 @@ Game.prototype = {
 
 // Tank object constructor.
 function Tank(game, controller) {
+  var x, y, startAngle;
   this.game = game;
-  var x = game.world.randomX;
-  var y = game.world.randomY;
+  this.rotation;
+  switch (true) {
+      case controller == 0:
+          x = this.game.world.width * 0.25;
+          y = this.game.world.height * 0.25;
+          startAngle = 0;
+          this.rotation = 90;
+          break;
+      case controller == 1:
+          x = this.game.world.width * 0.75;
+          y = this.game.world.height * 0.25;
+          startAngle = 180;
+          this.rotation = 270;
+          break;
+      case controller == 2:
+          x = this.game.world.height * 0.25;
+          y = this.game.world.width * 0.75;
+          startAngle = 0;
+          this.rotation = 90;
+          break;
+      case controller == 3:
+          x = this.game.world.height * 0.75;
+          y = this.game.world.width * 0.75;
+          startAngle = 180;
+          this.rotation = 270;
+          break;
+  }
+
   this.velocity = 125;
   this.fireRate = 1000;
   this.nextFire = 0;
-  this.rotation = 1;
   this.colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
   // Controller is the index of input array where this tanks inputs are stored.
   this.controller = controller;
@@ -144,7 +185,7 @@ function Tank(game, controller) {
   this.sprite.animations.add('move', [0,1,2], 10, true);
   // this.sprite.animations.add('move', [0,1,2], 10, true);
   //set initial angle
-  this.sprite.angle = -90;
+  this.sprite.angle = startAngle;
   this.sprite.anchor.set(0.5, 0.5);
 
   // Enable arcade style physics on the tank.
@@ -289,7 +330,7 @@ Tank.prototype = {
     //shoot out pieces and specified angle and velocities
     var angle1 = (Math.random() * 90);
     var angle2 = (Math.random() * 90) + 90;
-    var angle3 = -(Math.random() * 180);
+    var angle3 = -(Math.random() * 90) - 45;
     game.physics.arcade.velocityFromAngle(angle1, 200, piece1.body.velocity);
     game.physics.arcade.velocityFromAngle(angle2, 200, piece2.body.velocity);
     game.physics.arcade.velocityFromAngle(angle3, 200, piece3.body.velocity);
@@ -309,6 +350,24 @@ Tank.prototype = {
 
   }
 };
+
+
+function quadrantSeperator() {
+    this.sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'seperator');
+}
+
+function Obstacle(x, y, scale) {
+    var scale = scale || 1;
+    this.sprite = game.add.sprite(x, y, 'obstacleSquare')
+    this.sprite.filters = [game.add.filter('Glow')]
+    game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+    this.sprite.body.immovable = true;
+    this.sprite.scale.setTo(scale);
+    // this.sprite.body.bounce.setTo(1, 1);
+    this.sprite.body.drag.set(200);
+    console.log('creating obstacle: '+ x + ' ' + y);
+}
+
 
 function handleBulletCollision(tank, bullet) {
   bullet.kill();

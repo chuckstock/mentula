@@ -8,7 +8,7 @@ Splash.prototype = {
     game.load.script('gameover','states/gameover.js');
   },
   loadImages: function () {
-    game.load.image('menu-bg', 'assets/background2.png');
+    game.load.image('menu-bg', 'assets/goodbackground.jpg');
     game.load.image('gameover-bg', 'assets/background1.jpg');
   },
   loadFonts: function () {
