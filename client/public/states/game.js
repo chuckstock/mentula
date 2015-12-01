@@ -31,18 +31,18 @@ Game.prototype = {
     game.load.image('bullet', 'assets/bullet.png');
 
     //tank debris
-    game.load.image('tank0debris1', 'assets/tank1debris1.png');
-    game.load.image('tank0debris2', 'assets/tank1debris2.png');
-    game.load.image('tank0debris3', 'assets/tank1debris3.png');
+    game.load.image('tank0debris1', 'assets/tank0debris1.png');
+    game.load.image('tank0debris2', 'assets/tank0debris2.png');
+    game.load.image('tank0debris3', 'assets/tank0debris3.png');
     game.load.image('tank1debris1', 'assets/tank1debris1.png');
     game.load.image('tank1debris2', 'assets/tank1debris2.png');
     game.load.image('tank1debris3', 'assets/tank1debris3.png');
-    game.load.image('tank2debris1', 'assets/tank1debris1.png');
-    game.load.image('tank2debris2', 'assets/tank1debris2.png');
-    game.load.image('tank2debris3', 'assets/tank1debris3.png');
-    game.load.image('tank3debris1', 'assets/tank1debris1.png');
-    game.load.image('tank3debris2', 'assets/tank1debris2.png');
-    game.load.image('tank3debris3', 'assets/tank1debris3.png');
+    game.load.image('tank2debris1', 'assets/tank2debris1.png');
+    game.load.image('tank2debris2', 'assets/tank2debris2.png');
+    game.load.image('tank2debris3', 'assets/tank2debris3.png');
+    game.load.image('tank3debris1', 'assets/tank3debris1.png');
+    game.load.image('tank3debris2', 'assets/tank3debris2.png');
+    game.load.image('tank3debris3', 'assets/tank3debris3.png');
 
     game.load.image('tankBurst', 'assets/tank-burst.png');
     game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
@@ -52,7 +52,7 @@ Game.prototype = {
   },
 
   create: function() {
-    land = game.add.tileSprite(0, 0, 800, 600, 'land');
+    land = game.add.tileSprite(0, 0, window.innerHeight - 10, window.innerHeight - 10, 'land');
     land.tint = 0x5396ac;
     land.filters = [ this.game.add.filter('Glow') ];
 
@@ -83,10 +83,10 @@ Game.prototype = {
   update: function() {
     this.getGamepadInput();
     for (var i = 0; i < players.length; i++) {
-      // console.log(inputs);
-      players[i].update();
-      game.physics.arcade.overlap(bullets, players[i].sprite, handleBulletCollision, null, this);
-
+      if (players[i].sprite.alive) {
+        players[i].update();
+        game.physics.arcade.overlap(bullets, players[i].sprite, handleBulletCollision, null, this);
+      }
     }
     for (var k = 0; k < players.length; k++) {
       for (var l = 0; l < players.length; l++) {
@@ -155,8 +155,8 @@ function Tank(game, controller) {
   this.sprite.body.bounce.setTo(1, 1);
   this.sprite.body.drag.set(0.2);
   this.sprite.body.maxVelocity.set(100);
-  this.sprite.tint = this.colors[this.controller + 2];
-  // this.sprite.filters = [ this.game.add.filter('Glow') ];
+  this.sprite.tint = this.colors[this.controller];
+  this.sprite.filters = [ this.game.add.filter('Glow') ];
 
 }
 
@@ -267,9 +267,9 @@ Tank.prototype = {
   },
   die: function() {
     //create sprites for each debris piece
-    var piece1 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank'+ this.controller + 'debris1');
-    var piece2 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank1debris2');
-    var piece3 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank1debris3');
+    var piece1 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank'+ (this.controller) + 'debris1');
+    var piece2 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank' + (this.controller) + 'debris2');
+    var piece3 = game.add.sprite(this.sprite.x, this.sprite.y, 'tank' + (this.controller) + 'debris3');
 
     //enable physics on each debris piece and set tint
     game.physics.enable(piece1, Phaser.Physics.ARCADE);
@@ -281,21 +281,28 @@ Tank.prototype = {
     piece1.tint = this.sprite.tint;
     piece2.tint = this.sprite.tint;
     piece3.tint = this.sprite.tint;
+    piece1.outOfBoundsKill = true;
+    piece2.outOfBoundsKill = true;
+    piece3.outOfBoundsKill = true;
+
 
     //shoot out pieces and specified angle and velocities
-    game.physics.arcade.velocityFromAngle(100, 200, piece1.body.velocity);
-    game.physics.arcade.velocityFromAngle(-85, 200, piece2.body.velocity);
-    game.physics.arcade.velocityFromAngle(0, 200, piece3.body.velocity);
+    var angle1 = (Math.random() * 90);
+    var angle2 = (Math.random() * 90) + 90;
+    var angle3 = -(Math.random() * 180);
+    game.physics.arcade.velocityFromAngle(angle1, 200, piece1.body.velocity);
+    game.physics.arcade.velocityFromAngle(angle2, 200, piece2.body.velocity);
+    game.physics.arcade.velocityFromAngle(angle3, 200, piece3.body.velocity);
 
     //adds spin to each piece of debris
-    piece1.body.angularVelocity = 800;
-    piece2.body.angularVelocity = 800;
-    piece3.body.angularVelocity = 800;
+    piece1.body.angularVelocity = 400;
+    piece2.body.angularVelocity = 400;
+    piece3.body.angularVelocity = 400;
 
     //** PARTICLE STROM ON DEATH **//
     emitter = game.add.emitter(this.sprite.x, this.sprite.y, 200);
     emitter.makeParticles('tankBurst');
-    emitter.lifespan = 1000;
+    emitter.lifespan = 750;
     emitter.gravity = 0;
     emitter.start(true, 750, null, 150);
 

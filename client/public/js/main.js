@@ -6,12 +6,12 @@ var socket = io();
 //   startGame();
 // })
 
-var game = new Phaser.Game(800,600, Phaser.AUTO, 'Cyber-Tanks');
-function Main() {};
+var game = new Phaser.Game(window.innerHeight, window.innerHeight, Phaser.AUTO, 'Cyber-Tanks');
+function Main() {}
 
 Main.prototype = {
   preload: function() {
-    game.load.image('background', 'assets/goodbackground.jpg');
+    game.load.image('background', 'assets/background2.png');
     game.load.image('loading', 'assets/loading.png');
     game.load.image('logo', 'assets/tankwithturret.png');
     game.load.script('splash', 'states/splash.js');
