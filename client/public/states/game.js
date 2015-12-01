@@ -50,7 +50,9 @@ Game.prototype = {
     game.load.spritesheet('tank3', 'assets/tanksheet4.png', 42, 40);
 
     // Obstacle assets
-    game.load.image('obstacle', 'assets/obstacle-square.png');
+    game.load.image('obstacleSquare', 'assets/obstacle-square.png');
+    game.load.image('obstacleL1', 'assets/obstacle-L1.png');
+    game.load.image('obstacleL2', 'assets/obstacle-L2.png');
 
   },
 
@@ -72,7 +74,11 @@ Game.prototype = {
     emitter = game.add.group();
     obstacles = game.add.group();
 
-    obstacles.add(new Obstacle().sprite);
+    // for (var i = 1; i <= 4; i++) {
+    //     for (var j = 0; j < 3; j++) {
+            new ObstacleSquare(50,50, 0.5)
+    //     }
+    // }
 
     bullets = game.add.group();
     bullets.enableBody = true;
@@ -137,13 +143,39 @@ Game.prototype = {
 
 // Tank object constructor.
 function Tank(game, controller) {
+  var x, y, startAngle;
   this.game = game;
-  var x = game.world.randomX;
-  var y = game.world.randomY;
+  this.rotation;
+  switch (true) {
+      case controller == 0:
+          x = this.game.world.width * 0.25;
+          y = this.game.world.height * 0.25;
+          startAngle = 0;
+          this.rotation = 90;
+          break;
+      case controller == 1:
+          x = this.game.world.width * 0.75;
+          y = this.game.world.height * 0.25;
+          startAngle = 180;
+          this.rotation = 270;
+          break;
+      case controller == 2:
+          x = this.game.world.height * 0.25;
+          y = this.game.world.width * 0.75;
+          startAngle = 0;
+          this.rotation = 90;
+          break;
+      case controller == 3:
+          x = this.game.world.height * 0.75;
+          y = this.game.world.width * 0.75;
+          startAngle = 180;
+          this.rotation = 270;
+          break;
+  }
+
   this.velocity = 125;
   this.fireRate = 1000;
   this.nextFire = 0;
-  this.rotation = 1;
   this.colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
   // Controller is the index of input array where this tanks inputs are stored.
   this.controller = controller;
@@ -153,7 +185,7 @@ function Tank(game, controller) {
   this.sprite.animations.add('move', [0,1,2], 10, true);
   // this.sprite.animations.add('move', [0,1,2], 10, true);
   //set initial angle
-  this.sprite.angle = -90;
+  this.sprite.angle = startAngle;
   this.sprite.anchor.set(0.5, 0.5);
 
   // Enable arcade style physics on the tank.
@@ -324,13 +356,16 @@ function quadrantSeperator() {
     this.sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'seperator');
 }
 
-function Obstacle() {
-    this.sprite = game.add.sprite(50, 50, 'obstacle')
+function Obstacle(x, y, scale) {
+    var scale = scale || 1;
+    this.sprite = game.add.sprite(x, y, 'obstacleSquare')
     this.sprite.filters = [game.add.filter('Glow')]
     game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-    this.sprite.immovable = false;
-    this.sprite.body.bounce.setTo(1, 1);
+    this.sprite.body.immovable = true;
+    this.sprite.scale.setTo(scale);
+    // this.sprite.body.bounce.setTo(1, 1);
     this.sprite.body.drag.set(200);
+    console.log('creating obstacle: '+ x + ' ' + y);
 }
 
 
