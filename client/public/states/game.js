@@ -3,6 +3,9 @@
 var players = [];
 var bullets;
 var land;
+var powerup;
+var rainbowColor = [0xffff00, 0x80ff00, 0x0000ff, 0xff00ff, 0xff0000];
+var timer;
 var obstacles;
 var inputs = [];
 var emitter = null;
@@ -50,6 +53,9 @@ Game.prototype = {
 
         // Obstacle assets
         game.load.image('obstacleSquare', 'assets/obstacle-square.png');
+
+        // Powerup Assets
+        game.load.spritesheet('powerup', 'assets/powerup2.png', 32, 30);
     },
     create: function() {
         land = game.add.sprite(0, 0, 'land');
@@ -58,6 +64,9 @@ Game.prototype = {
         land.height = window.innerHeight;
         land.width = window.innerHeight;
 
+
+
+        // create socket
         socket.on('game-update', function(data) {
             inputs[data.player] = data;
         });
@@ -70,6 +79,13 @@ Game.prototype = {
         obstacles = game.add.group();
         createMap1(game);
 
+        // powerup
+        powerup = game.add.sprite(game.world.centerX, game.world.centerY, 'powerup');
+        game.physics.enable(powerup, Phaser.Physics.ARCADE);
+        powerup.animations.add('spin', [0,1,2,3], 10, true);
+        powerup.anchor.setTo(0.5, 0.5);
+        powerup.tint = 0xcc00ff;
+
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -81,10 +97,13 @@ Game.prototype = {
         bullets.setAll('body.bounce.x', 1);
         bullets.setAll('body.bounce.y', 1);
 
-        bullets.setAll('filters',[ this.game.add.filter('Glow') ]);
+        // bullets.setAll('filters',[ this.game.add.filter('Glow') ]);
     },
     update: function() {
         this.getGamepadInput();
+
+        powerup.play('spin');
+
         for (var i = 0; i < players.length; i++) {
             if (players[i].sprite.alive) {
                 players[i].update();
@@ -94,11 +113,23 @@ Game.prototype = {
         game.physics.arcade.collide(bullets, obstacles);
         for (var k = 0; k < players.length; k++) {
             game.physics.arcade.collide(players[k].sprite, obstacles);
+            game.physics.arcade.overlap(players[k].sprite, powerup, function(player, powerup) {
+                players[player.playerId].rainbow();
+                powerup.kill();
+            });
             for (var l = 0; l < players.length; l++) {
-                game.physics.arcade.collide(players[k].sprite, players[l].sprite);
+                game.physics.arcade.collide(players[k].sprite, players[l].sprite, null, function(player1, player2) {
+                    // when super collides with non-super, kill that player
+                    if (players[player1.playerId].super && player1 !== player2) {
+                        console.log('player 2 ', players[player2.playerId].sprite.health);
+                        players[player2.playerId].sprite.health = 0;
+                    }
+                });
             }
         }
-
+        game.physics.arcade.overlap(bullets, obstacles, function(bullet, obstacle) {
+            bullet.kill();
+        });
     },
     getGamepadInput: function() {
         //   console.log(this.gamepads);
@@ -136,7 +167,8 @@ function Tank(game, controller) {
     var x, y, startAngle;
     this.game = game;
     this.rotation;
-
+    this.super = false;
+    this.superTime;
     //give specific starting location based on controller
     switch (true) {
         case controller === 0:
@@ -164,7 +196,7 @@ function Tank(game, controller) {
         this.rotation = 270;
         break;
     }
-    this.velocity = 125;
+    this.velocity = 200;
     this.fireRate = 1000;
     this.nextFire = 0;
     this.colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
@@ -184,15 +216,28 @@ function Tank(game, controller) {
     this.sprite.body.immovable = false;
     // Keep the tank on the screen
     this.sprite.body.collideWorldBounds = true;
+    this.sprite.playerId = this.controller;
     this.sprite.body.bounce.setTo(1, 1);
     this.sprite.body.drag.set(0.2);
-    this.sprite.body.maxVelocity.set(100);
+    this.sprite.body.maxVelocity.set(500);
     this.sprite.tint = this.colors[this.controller];
     // this.sprite.filters = [ this.game.add.filter('Glow') ];
 }
 
 Tank.prototype = {
     update: function () {
+
+        //** Check Super Status **//
+        if (this.super) {
+            if (this.superTime + 5000 > game.time.now) {
+                this.velocity = 500;
+            } else {
+                this.super = false;
+                this.velocity = 200;
+                this.sprite.tint = this.colors[this.controller];
+            }
+        }
+
         //** Check heatlh **//
         if (this.sprite.health <= 0 && this.sprite.alive) {
             this.sprite.kill();
@@ -273,8 +318,8 @@ Tank.prototype = {
                 //  And fire it
                 var radians = this.rotation * (Math.PI/180);
                 vector = {};
-                vector.x = 33 * Math.sin(radians);
-                vector.y = 33 * Math.cos(radians);
+                vector.x = 40 * Math.sin(radians);
+                vector.y = 40 * Math.cos(radians);
                 if (this.rotation >= 0 && this.rotation <= 90) {
                     bullet.reset(this.sprite.x + vector.x, this.sprite.y - vector.y);
                 } else if (this.rotation > 90 && this.rotation <= 180) {
@@ -284,12 +329,13 @@ Tank.prototype = {
                 } else if (this.rotation > 270 && this.rotation <= 360) {
                     bullet.reset(this.sprite.x + vector.x, this.sprite.y - vector.y);
                 }
-                bullet.lifespan = 2000;
+                bullet.lifespan = 4000;
 
                 bullet.angle = this.sprite.angle;
-                game.physics.arcade.velocityFromAngle(this.sprite.angle, 400, bullet.body.velocity);
+                game.physics.arcade.velocityFromAngle(this.sprite.angle, 300, bullet.body.velocity);
                 // console.log(bullet);
-
+                bullet.tint = this.sprite.tint;
+                bullet.scale.setTo(2);
                 this.nextFire = this.game.time.now + this.fireRate;
             }
         }
@@ -334,6 +380,16 @@ Tank.prototype = {
         emitter.lifespan = 750;
         emitter.gravity = 0;
         emitter.start(true, 750, null, 150);
+    },
+    rainbow: function() {
+        this.super = true;
+        this.superTime = game.time.now;
+
+        game.time.events.repeat(100, 50, function() {
+            console.log('poop');
+            var tintIndex = Math.floor(Math.random() * rainbowColor.length);
+            this.sprite.tint = rainbowColor[tintIndex];
+        }.bind(this), game);
     }
 };
 
@@ -356,7 +412,7 @@ function Obstacle(x, y, scaleX, scaleY) {
 
 function handleBulletCollision(tank, bullet) {
     bullet.kill();
-    tank.health -= 50;
+    tank.health -= 25;
 }
 
 function createMap1() {
