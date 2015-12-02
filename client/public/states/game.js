@@ -54,7 +54,7 @@ Game.prototype = {
     create: function() {
         land = game.add.sprite(0, 0, 'land');
         land.tint = 0x5396ac;
-        land.filters = [ this.game.add.filter('Glow') ];
+        // land.filters = [ this.game.add.filter('Glow') ];
         land.height = window.innerHeight;
         land.width = window.innerHeight;
 
@@ -68,6 +68,7 @@ Game.prototype = {
 
         emitter = game.add.group();
         obstacles = game.add.group();
+        createMap1(game);
 
         bullets = game.add.group();
         bullets.enableBody = true;
@@ -187,8 +188,7 @@ function Tank(game, controller) {
     this.sprite.body.drag.set(0.2);
     this.sprite.body.maxVelocity.set(100);
     this.sprite.tint = this.colors[this.controller];
-    this.sprite.filters = [ this.game.add.filter('Glow') ];
-
+    // this.sprite.filters = [ this.game.add.filter('Glow') ];
 }
 
 Tank.prototype = {
@@ -205,7 +205,6 @@ Tank.prototype = {
                 p.tint = tint;
                 p.scale.setTo(0.5, 0.5);
             });
-
         }
 
         if (this.rotation > 360){
@@ -343,20 +342,35 @@ function quadrantSeperator() {
     this.sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'seperator');
 }
 
-function Obstacle(x, y, scale) {
-    this.scale = scale || 1;
+function Obstacle(x, y, scaleX, scaleY) {
+    this.scaleX = scaleX || 1;
+    this.scaleY = scaleY || 1;
     this.sprite = game.add.sprite(x, y, 'obstacleSquare');
-    this.sprite.filters = [game.add.filter('Glow')];
+    // this.sprite.filters = [game.add.filter('Glow')];
     game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+    this.sprite.anchor.set(0.5, 0.5);
     this.sprite.body.immovable = true;
-    this.sprite.scale.setTo(this.scale);
-    this.sprite.body.drag.set(200);
+    this.sprite.scale.setTo(this.scaleX, this.scaleY);
 }
 
 
 function handleBulletCollision(tank, bullet) {
     bullet.kill();
     tank.health -= 50;
+}
+
+function createMap1() {
+    //corner blocks
+    obstacles.add(new Obstacle(game.world.width / 8, game.world.height / 8, 0.75, 0.75).sprite);
+    obstacles.add(new Obstacle(game.world.width / 8, game.world.height - game.world.height / 8, 0.75, 0.75).sprite);
+    obstacles.add(new Obstacle(game.world.width - game.world.width / 8, game.world.height / 8, 0.75, 0.75).sprite);
+    obstacles.add(new Obstacle(game.world.width - game.world.width / 8, game.world.height - game.world.height / 8, 0.75, 0.75).sprite);
+
+    //middle blocks
+    obstacles.add(new Obstacle(game.world.width / 2, game.world.height/4, 0.5, 1.5).sprite);
+    obstacles.add(new Obstacle(game.world.width / 2, game.world.height - game.world.height/4, 0.5, 1.5).sprite);
+    obstacles.add(new Obstacle(game.world.width / 4, game.world.height - game.world.height/2, 1.5, 0.5).sprite);
+    obstacles.add(new Obstacle(game.world.width - game.world.width / 4, game.world.height - game.world.height/2, 1.5, 0.5).sprite);
 }
 
 Phaser.Filter.Glow = function (game) {
