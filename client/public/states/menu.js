@@ -53,9 +53,10 @@ Menu.prototype = {
     },
     addMenuCreate: function() {
         var optionStyle = { font: '30pt CS', fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4};
-        var txt = game.make.text(200, game.world.centerY + 50, 'create game ', optionStyle);
+        var txt = game.make.text(game.world.centerX, game.world.centerY, 'create game ', optionStyle);
+        txt.anchor.setTo(0.5, 0.5);
         var onOver = function (target) {
-            target.fill = "#FEFFD5";
+            target.fill = "#30DEF8";
             target.stroke = "rgba(200,200,200,0.5)";
         };
         var onOut = function (target) {
@@ -63,13 +64,16 @@ Menu.prototype = {
             target.stroke = "rgba(0,0,0,0)";
         };
         var onClick = function (target) {
-            game.add.text(175, game.world.centerY + 50, 'game id: ' + this.gameRoom, {
+            var txt = game.add.text(game.world.centerX, game.world.centerY, 'game id: ' + this.gameRoom, {
                 font: '30pt CS',
                 fill: 'white',
                 align: 'center',
                 stroke: 'rgba(0,0,0,0)',
                 strokeThickness: 4
             });
+            txt.anchor.setTo(0.5, 0.5);
+
+
             if (self.playerCount >= 1) {
                 self.addMenuStart();
             }
@@ -96,9 +100,11 @@ Menu.prototype = {
     },
     addMenuStart: function() {
         var optionStyle = { font: '30pt CS', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-        var txt = game.add.text(200, game.world.centerY + 150, 'Start Game ', optionStyle);
+        var txt = game.add.text(game.world.centerX, game.world.centerY + 50, 'Start Game ', optionStyle);
+        txt.anchor.setTo(0.5, 0.5);
+
         var onOver = function (target) {
-            target.fill = "#FEFFD5";
+            target.fill = "#30DEF8";
             target.stroke = "rgba(200,200,200,0.5)";
         };
         var onOut = function (target) {
@@ -107,7 +113,7 @@ Menu.prototype = {
         };
         var onClick = function() {
             socket.emit('game-started', {gameRoom: this.gameRoom});
-            game.state.start('Game', false, false, this.playerCount);
+            game.state.start('Game', true, false, this.playerCount);
         }.bind(this);
         txt.stroke = "rgba(0,0,0,0";
         txt.strokeThickness = 4;
@@ -117,12 +123,30 @@ Menu.prototype = {
         txt.events.onInputOut.add(onOut);
     },
     addPlayerBox: function() {
-        game.add.text(this.playerCount*80, 500, ' ' + this.playerCount + ' ', {
-            font: 'bold 20pt CS',
-            fill: '#30DEF8',
-            align: 'center',
-            backgroundColor: 'white'
-        });
+        if (this.playerCount === 1) {
+            var tank1 = game.add.sprite(game.world.width / 8, game.world.height * 0.8, 'tank0');
+            tank1.anchor.setTo(0.5, 0.5);
+            tank1.scale.setTo(2);
+            tank1.tint = 0x00cc00;
+        } else if (this.playerCount === 2) {
+            var tank2 = game.add.sprite(game.world.width / 2 - game.world.width / 8, game.world.height * 0.8, 'tank1');
+            tank2.anchor.setTo(0.5, 0.5);
+            tank2.scale.setTo(2);
+            tank2.tint = 0x1a75ff;
+
+        } else if (this.playerCount === 3) {
+            var tank3 = game.add.sprite(game.world.width / 2 + game.world.width /8, game.world.height * 0.8, 'tank2');
+            tank3.anchor.setTo(0.5, 0.5);
+            tank3.scale.setTo(2);
+            tank3.tint = 0xe5e600;
+
+        } else {
+            var tank4 = game.add.sprite(game.world.width * 0.875, game.world.height * 0.8, 'tank3');
+            tank4.anchor.setTo(0.5, 0.5);
+            tank4.scale.setTo(2);
+            tank4.tint = 0xe67300;
+
+        }
     },
     preload: function () {
         this.playerCount;
