@@ -1,7 +1,10 @@
 html, body, #controls {
   background-color: black;
   height: 100%
+}
 
+#error-message {
+    color: white;
 }
 
 #left-track,

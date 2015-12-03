@@ -23,30 +23,33 @@ Menu.prototype = {
         this.instructions.anchor.setTo(0.5);
         game.input.gamepad.start();
         game.input.gamepad.onConnectCallback = function() {
-            socket.emit('gamepad-player', {gameRoom: self.gameRoom})
-        }
+            socket.emit('gamepad-player', {gameRoom: this.gameRoom})
+        }.bind(this)
         game.input.gamepad.onDisconnectCallback = function() {
-            self.playerCount--;
+            this.playerCount--;
             // Remove player box
             // Send message to server decreasing player count
-        }
+        }.bind(this)
     },
     create: function() {
-        self = this;
         game.add.sprite(0, 0, 'menu-bg');
         game.add.existing(this.titleText);
         game.add.existing(this.instructions);
         socket.on('player-joined', function(data) {
-            self.playerCount ? self.playerCount++ : self.playerCount = 1;
-            self.addPlayerBox();
-            if (self.playerCount >= 1) {
-                self.addMenuStart();
+            this.playerCount ? this.playerCount++ : this.playerCount = 1;
+            this.addPlayerBox();
+            if (this.playerCount >= 1) {
+                this.addMenuStart();
             }
-        });
-        this.createMenu = this.addMenuCreate();
-        for (var i = 1; i <= game.input.gamepad.padsConnected; i++) {
-            socket.emit('gamepad-player', {gameRoom: self.gameRoom});
-        }
+        }.bind(this));
+        socket.on('success-create', function(data) {
+            this.gameRoom = data.gameRoom;
+            this.viewerId = data.viewerId;
+            for (var i = 1; i <= game.input.gamepad.padsConnected; i++) {
+                socket.emit('gamepad-player', {gameRoom: this.gameRoom});
+            }
+            this.createMenu = this.addMenuCreate();
+        }.bind(this));
     },
     addMenuCreate: function() {
         var optionStyle = { font: '30pt CS', fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4};
@@ -60,7 +63,7 @@ Menu.prototype = {
             target.stroke = "rgba(0,0,0,0)";
         };
         var onClick = function (target) {
-            game.add.text(175, game.world.centerY + 50, 'game id: ' + self.gameRoom, {
+            game.add.text(175, game.world.centerY + 50, 'game id: ' + this.gameRoom, {
                 font: '30pt CS',
                 fill: 'white',
                 align: 'center',
@@ -71,7 +74,7 @@ Menu.prototype = {
                 self.addMenuStart();
             }
             target.destroy();
-        };
+        }.bind(this);
 
         txt.stroke = "rgba(0,0,0,0";
         txt.strokeThickness = 4;
@@ -84,12 +87,12 @@ Menu.prototype = {
     },
     createGame: function() {
         // Set gameRoom
-        this.gameRoom = Math.floor((Math.random() * 10000) + 10000);
+        var tempGameRoom = Math.floor((Math.random() * 10000) + 10000);
 
         // Set viewerId
-        this.viewerId = Math.floor((Math.random() * 10000) + 10000);
+        var tempViewerId = Math.floor((Math.random() * 10000) + 10000);
 
-        socket.emit('create-game', {gameRoom: this.gameRoom, viewerId: this.viewerId});
+        socket.emit('create-game', {gameRoom: tempGameRoom, viewerId: tempViewerId});
     },
     addMenuStart: function() {
         var optionStyle = { font: '30pt CS', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
@@ -103,8 +106,9 @@ Menu.prototype = {
             target.stroke = "rgba(0,0,0,0)";
         };
         var onClick = function() {
-            game.state.start('Game', false, false, self.playerCount);
-        };
+            socket.emit('game-started', {gameRoom: this.gameRoom});
+            game.state.start('Game', false, false, this.playerCount);
+        }.bind(this);
         txt.stroke = "rgba(0,0,0,0";
         txt.strokeThickness = 4;
         txt.inputEnabled = true;
