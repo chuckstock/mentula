@@ -28,34 +28,7 @@ Game.prototype = {
         }
     },
     preload: function() {
-        game.load.image('land', 'assets/floortile3.png');
-        game.load.image('bullet', 'assets/bullet.png');
 
-        //tank debris
-        game.load.image('tank0debris1', 'assets/tank0debris1.png');
-        game.load.image('tank0debris2', 'assets/tank0debris2.png');
-        game.load.image('tank0debris3', 'assets/tank0debris3.png');
-        game.load.image('tank1debris1', 'assets/tank1debris1.png');
-        game.load.image('tank1debris2', 'assets/tank1debris2.png');
-        game.load.image('tank1debris3', 'assets/tank1debris3.png');
-        game.load.image('tank2debris1', 'assets/tank2debris1.png');
-        game.load.image('tank2debris2', 'assets/tank2debris2.png');
-        game.load.image('tank2debris3', 'assets/tank2debris3.png');
-        game.load.image('tank3debris1', 'assets/tank3debris1.png');
-        game.load.image('tank3debris2', 'assets/tank3debris2.png');
-        game.load.image('tank3debris3', 'assets/tank3debris3.png');
-
-        game.load.image('tankBurst', 'assets/tank-burst.png');
-        game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
-        game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
-        game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
-        game.load.spritesheet('tank3', 'assets/tanksheet4.png', 42, 40);
-
-        // Obstacle assets
-        game.load.image('obstacleSquare', 'assets/obstacle-square.png');
-
-        // Powerup Assets
-        game.load.spritesheet('powerup', 'assets/powerup2.png', 32, 30);
     },
     create: function() {
         land = game.add.sprite(0, 0, 'land');
@@ -119,10 +92,18 @@ Game.prototype = {
             });
             for (var l = 0; l < players.length; l++) {
                 game.physics.arcade.collide(players[k].sprite, players[l].sprite, null, function(player1, player2) {
+                    // FIXME: refactor this super collision
+                    // if (players[player1.playerId].super && player1 !== player2) {
+                    //     players[player2.playerId].sprite.health = 0;
+                    // }
+
                     // when super collides with non-super, kill that player
-                    if (players[player1.playerId].super && player1 !== player2) {
-                        console.log('player 2 ', players[player2.playerId].sprite.health);
-                        players[player2.playerId].sprite.health = 0;
+                    if ((players[player1.playerId].super || players[player2.playerId].super) && player1 !== player2) {
+                        if (players[player1.playerId].super) {
+                            players[player2.playerId].sprite.health = 0;
+                        } else {
+                            players[player1.playerId].sprite.health = 0;
+                        }
                     }
                 });
             }
@@ -155,10 +136,8 @@ Game.prototype = {
             } else {
                 inputs[player].fire = false;
             }
-
         }
-
-    }
+    },
 };
 
 
@@ -204,6 +183,8 @@ function Tank(game, controller) {
     this.controller = controller;
     this.sprite = game.add.sprite(x, y, 'tank' + (this.controller));
     this.sprite.health = 100;
+    this.sprite.maxHealth = 100;
+    this.sprite.danger = false;
     this.sprite.frame = 1;
     this.sprite.animations.add('move', [0,1,2], 10, true);
     // this.sprite.animations.add('move', [0,1,2], 10, true);
@@ -221,12 +202,11 @@ function Tank(game, controller) {
     this.sprite.body.drag.set(0.2);
     this.sprite.body.maxVelocity.set(500);
     this.sprite.tint = this.colors[this.controller];
-    // this.sprite.filters = [ this.game.add.filter('Glow') ];
+
 }
 
 Tank.prototype = {
     update: function () {
-
         //** Check Super Status **//
         if (this.super) {
             if (this.superTime + 5000 > game.time.now) {
@@ -240,6 +220,7 @@ Tank.prototype = {
 
         //** Check heatlh **//
         if (this.sprite.health <= 0 && this.sprite.alive) {
+            console.log('here');
             this.sprite.kill();
             this.die();
 
@@ -250,8 +231,21 @@ Tank.prototype = {
                 p.tint = tint;
                 p.scale.setTo(0.5, 0.5);
             });
+        } else if (this.sprite.health <= 25  && this.sprite.danger === false) {
+            this.sprite.danger = true;
+            this.danger();
         }
 
+        // if danger for certain time, regen health
+        if (this.sprite.danger) {
+            if (this.dangerTime + 5000 <= game.time.now) {
+
+                this.sprite.health += 25;
+                this.sprite.danger = false;
+            }
+        }
+
+        //keep tank rotaion between 0 and 360
         if (this.rotation > 360){
             this.rotation = this.rotation - 360;
         } else if (this.rotation < 0) {
@@ -360,6 +354,8 @@ Tank.prototype = {
         piece2.outOfBoundsKill = true;
         piece3.outOfBoundsKill = true;
 
+        // Take player out of players array
+        // players.splice(this.controller, 1);
 
         //shoot out pieces and specified angle and velocities
         var angle1 = (Math.random() * 90);
@@ -386,9 +382,20 @@ Tank.prototype = {
         this.superTime = game.time.now;
 
         game.time.events.repeat(100, 50, function() {
-            console.log('poop');
             var tintIndex = Math.floor(Math.random() * rainbowColor.length);
             this.sprite.tint = rainbowColor[tintIndex];
+        }.bind(this), game);
+    },
+    danger: function () {
+        this.dangerTime = game.time.now;
+        console.log(this.dangerTime);
+        console.log(game.time.now);
+        game.time.events.repeat(500, 10, function() {
+            if (this.sprite.tint === 0xff0000) {
+                this.sprite.tint = this.colors[this.controller];
+            } else {
+                this.sprite.tint = 0xff0000;
+            }
         }.bind(this), game);
     }
 };

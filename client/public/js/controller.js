@@ -1,6 +1,7 @@
 
 $(document).ready(function () {
     $('#controls').hide();
+    $('#error-message').hide();
     var socket = io();
     var viewportWidth = $(window).width();
     var viewportHeight = $(window).height();
@@ -8,6 +9,10 @@ $(document).ready(function () {
     var right = 1;
     var fire = false;
     var player;
+
+    socket.on('invalid-room', function() {
+        $('#error-message').show();
+    });
 
     //** JOIN GAME ROOM **//
     $('#join').on('click', function() {
@@ -18,15 +23,13 @@ $(document).ready(function () {
 
         // listens for success-join from server and assigns controller a player number
         socket.on('success-join', function(playerNum) {
-        player = playerNum;
+            player = playerNum;
+            $('#error-message').hide();
+            $('#controls').show();
+            $('#game-room-input').hide();
+            setInterval(updateGame, 30);
+        });
     });
-
-    $('#game-room-input').hide();
-    $('#controls').show();
-
-    setInterval(updateGame, 20);
-
-});
 
   //** CONTROLLER **//
   $('#fire').on('touchstart', function (event) {

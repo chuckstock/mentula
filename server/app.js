@@ -42,23 +42,29 @@ var rooms = {};
 io.on('connection', function(socket){
   // new-player emit comes from controller after entering unique game code
   socket.on('new-player', function(data) {
-    socket.join(data.gameRoom);
-    socket.room = data.gameRoom;
 
-    //check to see how many players have joined the game room
-    if (rooms[data.gameRoom].players) {
-      rooms[data.gameRoom].players++;
+    // if game room does not exist or the game has already start, do not let the player join.  
+    if (!rooms[data.gameRoom] || rooms[data.gameRoom].started) {
+        socket.emit('invalid-room');
     } else {
-      rooms[data.gameRoom].players = 1;
-    }
-    console.log('Phone Controller: room ' + data.gameRoom)
-    io.sockets.in(rooms[socket.room].id).emit('player-joined', rooms[data.gameRoom].players);
-    //send unqiue player identifier to controller
-    socket.emit('success-join', rooms[data.gameRoom].players - 1);
+        socket.join(data.gameRoom);
+        socket.room = data.gameRoom;
 
-    // check to see if there is more than one player, to start the game then emits start-game event to viewer
-    if (rooms[data.gameRoom].players >= 1) {
-      io.sockets.in(rooms[socket.room].id).emit('start-game');
+        //check to see how many players have joined the game room
+        if (rooms[data.gameRoom].players) {
+          rooms[data.gameRoom].players++;
+        } else {
+          rooms[data.gameRoom].players = 1;
+        }
+        console.log('Phone Controller: room ' + data.gameRoom)
+        io.sockets.in(rooms[socket.room].id).emit('player-joined', rooms[data.gameRoom].players);
+        //send unqiue player identifier to controller
+        socket.emit('success-join', rooms[data.gameRoom].players - 1);
+
+        // check to see if there is more than one player, to start the game then emits start-game event to viewer
+        if (rooms[data.gameRoom].players >= 1) {
+          io.sockets.in(rooms[socket.room].id).emit('start-game');
+        }
     }
   });
 
@@ -84,9 +90,20 @@ io.on('connection', function(socket){
   // listens for create-game from viewer and creates a unique game room on the server
   socket.on('create-game', function(data) {
     // data.gameRoom & data.viewerId
-    console.log('Creating Game: ' + data.gameRoom);
-    rooms[data.gameRoom] = {id:data.viewerId};
-    socket.join(data.viewerId);
+    if (!rooms[data.gameRoom]) {
+        console.log('Creating Game: ' + data.gameRoom);
+        rooms[data.gameRoom] = {id:data.viewerId};
+        rooms[data.gameRoom].started = false;
+        socket.join(data.viewerId);
+        socket.emit('success-create', data);
+    } else {
+        socket.emit('invalid-room');
+    }
+  });
+
+  socket.on('game-started', function(data) {
+      console.log('Starting Game Number: ', data.gameRoom);
+      rooms[data.gameRoom].started = true;
   });
 
 });

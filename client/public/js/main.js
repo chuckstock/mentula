@@ -5,7 +5,7 @@ function Main() {}
 
 Main.prototype = {
     preload: function() {
-        game.load.image('background', 'assets/background2.png');
+        game.load.image('background', 'assets/goodbackground.jpg');
         game.load.image('loading', 'assets/loading.png');
         game.load.image('logo', 'assets/tankwithturret.png');
         game.load.script('splash', 'states/splash.js');
