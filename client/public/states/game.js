@@ -28,34 +28,7 @@ Game.prototype = {
         }
     },
     preload: function() {
-        game.load.image('land', 'assets/floortile3.png');
-        game.load.image('bullet', 'assets/bullet.png');
-
-        //tank debris
-        game.load.image('tank0debris1', 'assets/tank0debris1.png');
-        game.load.image('tank0debris2', 'assets/tank0debris2.png');
-        game.load.image('tank0debris3', 'assets/tank0debris3.png');
-        game.load.image('tank1debris1', 'assets/tank1debris1.png');
-        game.load.image('tank1debris2', 'assets/tank1debris2.png');
-        game.load.image('tank1debris3', 'assets/tank1debris3.png');
-        game.load.image('tank2debris1', 'assets/tank2debris1.png');
-        game.load.image('tank2debris2', 'assets/tank2debris2.png');
-        game.load.image('tank2debris3', 'assets/tank2debris3.png');
-        game.load.image('tank3debris1', 'assets/tank3debris1.png');
-        game.load.image('tank3debris2', 'assets/tank3debris2.png');
-        game.load.image('tank3debris3', 'assets/tank3debris3.png');
-
-        game.load.image('tankBurst', 'assets/tank-burst.png');
-        game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
-        game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
-        game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
-        game.load.spritesheet('tank3', 'assets/tanksheet4.png', 42, 40);
-
-        // Obstacle assets
-        game.load.image('obstacleSquare', 'assets/obstacle-square.png');
-
-        // Powerup Assets
-        game.load.spritesheet('powerup', 'assets/powerup2.png', 32, 30);
+        
     },
     create: function() {
         land = game.add.sprite(0, 0, 'land');
