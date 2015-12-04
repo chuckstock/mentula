@@ -202,6 +202,8 @@ function Tank(game, controller) {
     this.sprite.body.drag.set(0.2);
     this.sprite.body.maxVelocity.set(500);
     this.sprite.tint = this.colors[this.controller];
+    // this.sprite.filters = [ this.game.add.filter('Glow') ];
+
 
 }
 
