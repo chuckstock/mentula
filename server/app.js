@@ -1,13 +1,13 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
 
 var app = express();
 
 // *** Models *** //
-require('./models/user');
-var User = mongoose.model('users');
+// require('./models/user');
+// var User = mongoose.model('users');
 
 app.set('port', process.env.PORT || 3000);
 
@@ -43,7 +43,7 @@ io.on('connection', function(socket){
   // new-player emit comes from controller after entering unique game code
   socket.on('new-player', function(data) {
 
-    // if game room does not exist or the game has already start, do not let the player join.  
+    // if game room does not exist or the game has already start, do not let the player join.
     if (!rooms[data.gameRoom] || rooms[data.gameRoom].started) {
         socket.emit('invalid-room');
     } else {
