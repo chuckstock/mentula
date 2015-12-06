@@ -5,7 +5,7 @@ var bullets;
 var land;
 var powerup;
 var rainbowColor = [0xffff00, 0x80ff00, 0x0000ff, 0xff00ff, 0xff0000];
-var colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
+var colors = [0x00cc00, 0x1a1aff, 0xffff00, 0xffa31a];
 var timer;
 var obstacles;
 var inputs = [];
