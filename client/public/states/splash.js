@@ -48,8 +48,8 @@ Splash.prototype = {
     loadFonts: function () {
         WebFontConfig = {
             custom: {
-                families: ['MGS', 'CS'],
-                urls: ['assets/styles/mgs.css', 'assets/styles/cyber-space.css']
+                families: ['MGS', 'CS', 'EK', 'PD', 'NP'],
+                urls: ['assets/styles/mgs.css', 'assets/styles/cyber-space.css', 'assets/styles/earth-kid.css', 'assets/styles/perfect-dark.css', 'assets/styles/neuropol.css']
             }
         };
     },

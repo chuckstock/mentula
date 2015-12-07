@@ -61,6 +61,14 @@ Game.prototype = {
         powerup.anchor.setTo(0.5, 0.5);
         powerup.tint = 0xcc00ff;
 
+        // center obstacle to protect powerup
+        this.centerObstacle =  new Obstacle(game.world.centerX, game.world.centerY, 0.5, 0.5);
+        obstacles.add(this.centerObstacle.sprite);
+        var randomTime = Math.floor(Math.random() * 10000) + 5000;
+        game.time.events.repeat(randomTime, 1, function() {
+            this.centerObstacle.sprite.destroy();
+        }.bind(this), game);
+
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -252,7 +260,6 @@ Tank.prototype = {
         // if danger for certain time, regen health
         if (this.sprite.danger) {
             if (this.dangerTime + 5000 <= game.time.now) {
-
                 this.sprite.health += 25;
                 this.sprite.danger = false;
             }
