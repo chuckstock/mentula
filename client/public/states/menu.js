@@ -38,7 +38,7 @@ Menu.prototype = {
         socket.on('player-joined', function(data) {
             this.playerCount ? this.playerCount++ : this.playerCount = 1;
             this.addPlayerBox();
-            if (this.playerCount >= 1) {
+            if (this.playerCount > 1) {
                 this.addMenuStart();
             }
         }.bind(this));

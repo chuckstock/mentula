@@ -5,6 +5,7 @@ var bullets;
 var land;
 var powerup;
 var rainbowColor = [0xffff00, 0x80ff00, 0x0000ff, 0xff00ff, 0xff0000];
+var colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
 var timer;
 var obstacles;
 var inputs = [];
@@ -36,6 +37,7 @@ Game.prototype = {
         // land.filters = [ this.game.add.filter('Glow') ];
         land.height = window.innerHeight;
         land.width = window.innerHeight;
+        players = [];
 
 
 
@@ -76,13 +78,24 @@ Game.prototype = {
         this.getGamepadInput();
 
         powerup.play('spin');
-
+        var count = 0;
+        var winner;
         for (var i = 0; i < players.length; i++) {
             if (players[i].sprite.alive) {
+                count++;
                 players[i].update();
                 game.physics.arcade.overlap(bullets, players[i].sprite, handleBulletCollision, null, this);
+                winner = i;
             }
         }
+
+        // if only one player or less  is alive, then end game.
+        if (count <= 1) {
+            game.time.events.repeat(2000, 1, function() {
+                game.state.start('GameOver', true, false, winner, this.playerCount);
+            }.bind(this), game);
+        }
+
         game.physics.arcade.collide(bullets, obstacles);
         for (var k = 0; k < players.length; k++) {
             game.physics.arcade.collide(players[k].sprite, obstacles);
@@ -178,7 +191,6 @@ function Tank(game, controller) {
     this.velocity = 200;
     this.fireRate = 1000;
     this.nextFire = 0;
-    this.colors = [0x00cc00, 0x1a75ff, 0xe5e600, 0xe67300];
     // Controller is the index of input array where this tanks inputs are stored.
     this.controller = controller;
     this.sprite = game.add.sprite(x, y, 'tank' + (this.controller));
@@ -201,7 +213,9 @@ function Tank(game, controller) {
     this.sprite.body.bounce.setTo(1, 1);
     this.sprite.body.drag.set(0.2);
     this.sprite.body.maxVelocity.set(500);
-    this.sprite.tint = this.colors[this.controller];
+    this.sprite.tint = colors[this.controller];
+    // this.sprite.filters = [ this.game.add.filter('Glow') ];
+
 
 }
 
@@ -214,13 +228,12 @@ Tank.prototype = {
             } else {
                 this.super = false;
                 this.velocity = 200;
-                this.sprite.tint = this.colors[this.controller];
+                this.sprite.tint = colors[this.controller];
             }
         }
 
         //** Check heatlh **//
         if (this.sprite.health <= 0 && this.sprite.alive) {
-            console.log('here');
             this.sprite.kill();
             this.die();
 
@@ -388,11 +401,9 @@ Tank.prototype = {
     },
     danger: function () {
         this.dangerTime = game.time.now;
-        console.log(this.dangerTime);
-        console.log(game.time.now);
         game.time.events.repeat(500, 10, function() {
             if (this.sprite.tint === 0xff0000) {
-                this.sprite.tint = this.colors[this.controller];
+                this.sprite.tint = colors[this.controller];
             } else {
                 this.sprite.tint = 0xff0000;
             }
