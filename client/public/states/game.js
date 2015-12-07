@@ -350,7 +350,7 @@ Tank.prototype = {
                 bullet.angle = this.sprite.angle;
                 game.physics.arcade.velocityFromAngle(this.sprite.angle, 300, bullet.body.velocity);
                 // console.log(bullet);
-                bullet.tint = this.sprite.tint;
+                bullet.tint = colors[this.controller];
                 bullet.scale.setTo(2);
                 this.nextFire = this.game.time.now + this.fireRate;
             }
@@ -369,9 +369,9 @@ Tank.prototype = {
         piece1.anchor.set(0.5, 0.5);
         piece2.anchor.set(0.5, 0.5);
         piece3.anchor.set(0.5, 0.5);
-        piece1.tint = this.sprite.tint;
-        piece2.tint = this.sprite.tint;
-        piece3.tint = this.sprite.tint;
+        piece1.tint = colors[this.controller];
+        piece2.tint = colors[this.controller];
+        piece3.tint = colors[this.controller];
         piece1.outOfBoundsKill = true;
         piece2.outOfBoundsKill = true;
         piece3.outOfBoundsKill = true;
