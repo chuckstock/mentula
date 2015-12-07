@@ -16,7 +16,7 @@ Menu.prototype = {
         });
         this.titleText.anchor.setTo(0.5);
         this.instructions = game.make.text(game.world.centerX, 250, '1.  Hit the "create game" button below \n2.  Visit this page on your phone \n3.  Enter the ID below to connect', {
-            font: '30pt CS',
+            font: '30pt OR',
             fill: '#FFFFFF',
             align: 'center'
         });

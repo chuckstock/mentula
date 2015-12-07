@@ -47,13 +47,9 @@ Splash.prototype = {
     },
     loadFonts: function () {
         WebFontConfig = {
-            // custom: {
-            //     families: ['MGS', 'CS2', 'CS'],
-            //     urls: ['assets/styles/mgs.css', 'assets/styles/cs.css', 'assets/styles/cs.css']
-            // }
             custom: {
-                families: ['CS'],
-                urls: ['assets/styles/cs.css']
+                families: ['MGS', 'OR'],
+                urls: ['assets/styles/mgs.css', 'assets/styles/or.css']
             }
         };
     },
