@@ -7,13 +7,13 @@ GameOver.prototype = {
         this.playerCount = playerCount;
         console.log(playerCount);
         this.titleText = game.make.text(game.world.centerX, 100, 'Cyber Tanks ', {
-            font: 'bold 60pt MGS',
+            font: 'bold 65pt MGS',
             fill: '#30DEF8',
             align: 'center'
         });
         this.titleText.anchor.setTo(0.5);
         this.winnerText = game.make.text(game.world.centerX, 300, 'Winner! ', {
-            font: '40pt MGS',
+            font: '30pt OR',
             fill: '#FFFFFF',
             align: 'center'
         });
@@ -30,8 +30,8 @@ GameOver.prototype = {
         this.addRestart();
     },
     addRestart: function() {
-        var optionStyle = { font: '30pt CS', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-        var txt = game.add.text(game.world.centerX, game.world.height * 0.8, 'Play Again? ', optionStyle);
+        var optionStyle = { font: '25pt OR', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+        var txt = game.add.text(game.world.centerX, game.world.height * 0.8, 'Play Again?', optionStyle);
         txt.anchor.setTo(0.5, 0.5);
 
         var onOver = function (target) {

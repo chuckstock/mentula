@@ -238,6 +238,8 @@ Tank.prototype = {
                 this.velocity = 200;
                 this.sprite.tint = colors[this.controller];
             }
+        } else if (!this.danger) {
+            this.sprite.tint = colors[this.controller];
         }
 
         //** Check heatlh **//
