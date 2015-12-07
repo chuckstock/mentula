@@ -10,13 +10,13 @@ Menu.prototype = {
     init: function() {
         this.createGame();
         this.titleText = game.make.text(game.world.centerX, 100, 'Cyber Tanks ', {
-            font: 'bold 60pt MGS',
+            font: 'bold 65pt MGS',
             fill: '#30DEF8',
             align: 'center'
         });
         this.titleText.anchor.setTo(0.5);
-        this.instructions = game.make.text(game.world.centerX, 250, '1.  Hit the "create game" button below \n2.  Visit this page on your phone \n3.  Enter the ID below to connect', {
-            font: '30pt OR',
+        this.instructions = game.make.text(game.world.centerX, 250, '1. Hit the "create game" button below \n2. Visit this page on your phone \n3. Enter the ID below to connect', {
+            font: '18pt OR',
             fill: '#FFFFFF',
             align: 'center'
         });
@@ -52,7 +52,7 @@ Menu.prototype = {
         }.bind(this));
     },
     addMenuCreate: function() {
-        var optionStyle = { font: '50pt CS', fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4};
+        var optionStyle = { font: '30pt OR', fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4};
         var txt = game.make.text(game.world.centerX, game.world.centerY, 'CREATE GAME ', optionStyle);
         txt.anchor.setTo(0.5, 0.5);
         var onOver = function (target) {
@@ -65,7 +65,7 @@ Menu.prototype = {
         };
         var onClick = function (target) {
             var txt = game.add.text(game.world.centerX, game.world.centerY, 'Game ID: ' + this.gameRoom, {
-                font: '50pt CS',
+                font: '30pt OR',
                 fill: 'white',
                 align: 'center',
                 stroke: 'rgba(0,0,0,0)',
@@ -99,8 +99,8 @@ Menu.prototype = {
         socket.emit('create-game', {gameRoom: tempGameRoom, viewerId: tempViewerId});
     },
     addMenuStart: function() {
-        var optionStyle = { font: '50pt CS', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
-        var txt = game.add.text(game.world.centerX, game.world.centerY + 50, 'Start Game ', optionStyle);
+        var optionStyle = { font: '30pt OR', fill: 'white', align: 'left', stroke: 'rgba(0,0,0,0)', srokeThickness: 4};
+        var txt = game.add.text(game.world.centerX, game.world.centerY + 100, 'Start Game ', optionStyle);
         txt.anchor.setTo(0.5, 0.5);
 
         var onOver = function (target) {
