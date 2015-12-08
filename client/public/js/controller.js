@@ -8,7 +8,7 @@ $(document).ready(function () {
     var left = 1;
     var right = 1;
     var fire = false;
-    var player;
+    var player = null;
     var playerColor;
     var colors = ['#00cc00', '#1a1aff', '#ffff00', '#ffa31a'];
 
@@ -118,7 +118,7 @@ $(document).ready(function () {
      switch(window.orientation) {
         case -90:
         case 90:
-            if (!player) {
+            if (player === null) {
                 $('#game-room-input').show();
             }
             $('#orientation').hide();
