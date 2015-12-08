@@ -39,8 +39,6 @@ Game.prototype = {
         land.width = window.innerHeight;
         players = [];
 
-
-
         // create socket
         socket.on('game-update', function(data) {
             inputs[data.player] = data;

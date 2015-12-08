@@ -72,7 +72,6 @@ io.on('connection', function(socket){
             rooms[data.gameRoom].players = 1;
         }
         console.log('Gamepad: room ' + data.gameRoom);
-        console.log(rooms[socket.room]);
         io.sockets.in(rooms[data.gameRoom].id).emit('player-joined', rooms[data.gameRoom].players);
     });
 

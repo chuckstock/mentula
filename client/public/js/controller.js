@@ -22,8 +22,12 @@ $(document).ready(function () {
         var gameRoom = $('#user-input').val();
 
         // Scroll to 0 to make some mobile browser go into fullscreen mode
-        var el = document.getElementById('controls');
-        el.webkitRequestFullscreen();
+        document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+
+        if (document.fullscreenEnabled) {
+            var el = document.getElementById('controls');
+            el.webkitRequestFullscreen();
+        }
 
         // sends new-player event to server to join controller to game room
         socket.emit('new-player', {gameRoom: gameRoom});
