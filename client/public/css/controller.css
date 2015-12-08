@@ -16,11 +16,14 @@ html, body, #controls {
 }
 
 #fire {
-  background-image: url(http://www.online-utility.org/image/ImageCache?file=4/4f/Button-Red.svg/800px-Button-Red.svg);
-  background-size: cover;
   min-height: 100%;
   min-width: 40%;
   max-width: 40%;
+}
+#fire img {
+    padding-top: 30%;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 #orientation {
