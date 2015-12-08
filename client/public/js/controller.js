@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $('#controls').hide();
     $('#error-message').hide();
+    $('#orientation').hide();
     var socket = io();
     var viewportWidth = $(window).width();
     var viewportHeight = $(window).height();
@@ -19,21 +20,21 @@ $(document).ready(function () {
 
     //** JOIN GAME ROOM **//
     $('#join').on('click', function() {
+
+
         var gameRoom = $('#user-input').val();
-
-        // Scroll to 0 to make some mobile browser go into fullscreen mode
-        document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
-
-        if (document.fullscreenEnabled) {
-            var el = document.getElementById('controls');
-            el.webkitRequestFullscreen();
-        }
 
         // sends new-player event to server to join controller to game room
         socket.emit('new-player', {gameRoom: gameRoom});
 
         // listens for success-join from server and assigns controller a player number
         socket.on('success-join', function(playerNum) {
+
+
+            window.addEventListener('orientationchange', handleOrientationChange);
+
+
+            handleOrientationChange();
             player = playerNum;
 
             //set color on controller to player
@@ -49,8 +50,14 @@ $(document).ready(function () {
 
         });
 
-    });
+        // if mobile has full screen mode, enable it after they successfully join
+        document.fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
 
+        if (document.fullscreenEnabled) {
+            var el = document.getElementById('controls');
+            el.webkitRequestFullscreen();
+        }
+    });
 
 
     //** CONTROLLER **//
@@ -106,4 +113,21 @@ $(document).ready(function () {
         // sends game-update to server with the players input and player number
         socket.emit('game-update', {right: right, left: left, fire: fire, player: player});
     }
+
+    function handleOrientationChange() {
+     switch(window.orientation) {
+        case -90:
+        case 90:
+            if (!player) {
+                $('#game-room-input').show();
+            }
+            $('#orientation').hide();
+            break;
+        default:
+            $('#game-room-input').hide();
+            $('#orientation').show();
+            break;
+        }
+    }
+
 });

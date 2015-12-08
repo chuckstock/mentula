@@ -1,11 +1,8 @@
 html, body, #controls {
   background-color: black;
+  color: white;
   height: 100%;
   width: 100%;
-}
-
-#error-message {
-    color: white;
 }
 
 #left-track,
@@ -24,4 +21,21 @@ html, body, #controls {
   min-height: 100%;
   min-width: 40%;
   max-width: 40%;
+}
+
+#orientation {
+    background-color: rgb(39, 45, 51);
+    padding-top: 30%;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+}
+
+#game-room-input {
+    margin-top: 10%;
+}
+#user-input {
+    color: black;
+    height: 50px;
+    font-size: 18pt;
 }
