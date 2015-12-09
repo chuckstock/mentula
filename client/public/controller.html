@@ -12,15 +12,23 @@
 <body>
 
   <!-- html for game room input -->
-  <div id="game-room-input">
-    <h4>Enter your game code:</h4>
-    <input type="number" id="user-input" />
-    <button type="button" id="join">Join Room</button>
+  <div class="container" id="game-room-input">
+      <div class="form-group text-center" >
+        <h2>Enter your Game ID:</h2>
+        <input class="form-control text-center" type="tel" id="user-input" />
+        <br>
+        <button class="btn btn-lg btn-success" type="button" id="join">Join Room</button>
+    </div>
   </div>
 
   <!-- error message -->
-  <div id="error-message">
+  <div class="text-center" id="error-message">
       <h2>Invalid Game ID. Please enter valid Game ID.</h2>
+  </div>
+
+  <!-- image for phone orientation -->
+  <div class="text-center" id="orientation">
+      <img src="./assets/phone-rotate.png">
   </div>
 
   <!-- html for controller -->
@@ -31,6 +39,7 @@
 
     <div id="right-track" class="col-xs-3"></div>
   </div>
+
 
   <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
