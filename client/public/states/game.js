@@ -58,6 +58,11 @@ Game.prototype = {
         powerup.animations.add('spin', [0,1,2,3], 10, true);
         powerup.anchor.setTo(0.5, 0.5);
         powerup.tint = 0xcc00ff;
+        game.time.events.repeat(30000, 10, function() {
+            if (!powerup.alive) {
+                powerup.revive()
+            }
+        }.bind(this), game);
 
         // center obstacle to protect powerup
         this.centerObstacle =  new Obstacle(game.world.centerX, game.world.centerY, 0.5, 0.5);

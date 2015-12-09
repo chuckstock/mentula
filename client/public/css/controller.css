@@ -32,8 +32,9 @@ html, body, #controls {
 }
 
 #game-room-input {
-    margin-top: 10%;
+    margin-top: 10%
 }
+
 #user-input {
     color: black;
     height: 50px;

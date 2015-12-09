@@ -64,14 +64,14 @@ Tank.prototype = {
     update: function () {
         //** Check Super Status **//
         if (this.super) {
-            if (this.superTime + 5000 > game.time.now) {
+            if (this.superTime + 4000 > game.time.now) {
                 this.velocity = 500;
             } else {
                 this.super = false;
                 this.velocity = 200;
                 this.sprite.tint = colors[this.controller];
             }
-        } else if (!this.danger) {
+        } else if (!this.sprite.danger) {
             this.sprite.tint = colors[this.controller];
         }
 
@@ -81,7 +81,7 @@ Tank.prototype = {
             this.die();
 
             //** Particle Explosion **//
-            var tint = this.sprite.tint;
+            var tint = colors[this.controller];
             emitter.forEachAlive(function(p){
                 p.alpha = p.lifespan / emitter.lifespan;
                 p.tint = tint;
@@ -96,6 +96,7 @@ Tank.prototype = {
         if (this.sprite.danger) {
             if (this.dangerTime + 5000 <= game.time.now) {
                 this.sprite.health += 25;
+                this.sprite.tint = colors[this.controller];
                 this.sprite.danger = false;
             }
         }
@@ -223,7 +224,7 @@ Tank.prototype = {
         this.super = true;
         this.superTime = game.time.now;
 
-        game.time.events.repeat(100, 50, function() {
+        game.time.events.repeat(100, 40, function() {
             var tintIndex = Math.floor(Math.random() * rainbowColor.length);
             this.sprite.tint = rainbowColor[tintIndex];
         }.bind(this), game);
