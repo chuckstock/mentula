@@ -35,7 +35,7 @@ Splash.prototype = {
         game.load.image('obstacleSquare', 'assets/obstacles/obstacle-square.png');
 
         // Powerup Assets
-        game.load.spritesheet('powerup', 'assets/powerups/powerup2.png', 32, 30);
+        game.load.spritesheet('powerup', 'assets/powerups/powerup.png', 32, 30);
 
         // ** Tank Sprite Sheets **//
         game.load.spritesheet('tank0', 'assets/tank/spritesheets/tanksheet.png', 42, 40);

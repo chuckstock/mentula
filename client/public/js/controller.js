@@ -44,7 +44,6 @@ $(document).ready(function () {
 
             //show and hide relevant divs
             $('#error-message').hide();
-            $('#controls').show();
             $('#game-room-input').hide();
             setInterval(updateGame, 30);
 
@@ -122,10 +121,12 @@ $(document).ready(function () {
                 $('#game-room-input').show();
             }
             $('#orientation').hide();
+            $('#controls').show();
             break;
         default:
             $('#game-room-input').hide();
             $('#orientation').show();
+            $('#controls').hide();
             break;
         }
     }
