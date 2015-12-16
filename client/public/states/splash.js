@@ -9,41 +9,39 @@ Splash.prototype = {
     },
     loadImages: function () {
         //menu backgrounds
-        game.load.image('menu-bg', 'assets/goodbackground.jpg');
-        game.load.image('gameover-bg', 'assets/background1.jpg');
+        game.load.image('menu-bg', 'assets/misc/background.jpg');
 
 
         //** GAME ASSETS **//
-
-        game.load.image('land', 'assets/floortile3.png');
-        game.load.image('bullet', 'assets/bullet.png');
+        game.load.image('land', 'assets/misc/floortile.png');
+        game.load.image('bullet', 'assets/tank/bullet.png');
 
         //tank debris
-        game.load.image('tank0debris1', 'assets/tank0debris1.png');
-        game.load.image('tank0debris2', 'assets/tank0debris2.png');
-        game.load.image('tank0debris3', 'assets/tank0debris3.png');
-        game.load.image('tank1debris1', 'assets/tank1debris1.png');
-        game.load.image('tank1debris2', 'assets/tank1debris2.png');
-        game.load.image('tank1debris3', 'assets/tank1debris3.png');
-        game.load.image('tank2debris1', 'assets/tank2debris1.png');
-        game.load.image('tank2debris2', 'assets/tank2debris2.png');
-        game.load.image('tank2debris3', 'assets/tank2debris3.png');
-        game.load.image('tank3debris1', 'assets/tank3debris1.png');
-        game.load.image('tank3debris2', 'assets/tank3debris2.png');
-        game.load.image('tank3debris3', 'assets/tank3debris3.png');
-        game.load.image('tankBurst', 'assets/tank-burst.png');
+        game.load.image('tank0debris1', 'assets/tank/debris/tank0debris1.png');
+        game.load.image('tank0debris2', 'assets/tank/debris/tank0debris2.png');
+        game.load.image('tank0debris3', 'assets/tank/debris/tank0debris3.png');
+        game.load.image('tank1debris1', 'assets/tank/debris/tank1debris1.png');
+        game.load.image('tank1debris2', 'assets/tank/debris/tank1debris2.png');
+        game.load.image('tank1debris3', 'assets/tank/debris/tank1debris3.png');
+        game.load.image('tank2debris1', 'assets/tank/debris/tank2debris1.png');
+        game.load.image('tank2debris2', 'assets/tank/debris/tank2debris2.png');
+        game.load.image('tank2debris3', 'assets/tank/debris/tank2debris3.png');
+        game.load.image('tank3debris1', 'assets/tank/debris/tank3debris1.png');
+        game.load.image('tank3debris2', 'assets/tank/debris/tank3debris2.png');
+        game.load.image('tank3debris3', 'assets/tank/debris/tank3debris3.png');
+        game.load.image('tankBurst', 'assets/tank/debris/tank-burst.png');
 
         // Obstacle assets
-        game.load.image('obstacleSquare', 'assets/obstacle-square.png');
+        game.load.image('obstacleSquare', 'assets/obstacles/obstacle-square.png');
 
         // Powerup Assets
-        game.load.spritesheet('powerup', 'assets/powerup2.png', 32, 30);
+        game.load.spritesheet('powerup', 'assets/powerups/powerup.png', 32, 30);
 
         // ** Tank Sprite Sheets **//
-        game.load.spritesheet('tank0', 'assets/tanksheet.png', 42, 40);
-        game.load.spritesheet('tank1', 'assets/tanksheet2.png', 42, 40);
-        game.load.spritesheet('tank2', 'assets/tanksheet3.png', 42, 40);
-        game.load.spritesheet('tank3', 'assets/tanksheet4.png', 42, 40);
+        game.load.spritesheet('tank0', 'assets/tank/spritesheets/tanksheet.png', 42, 40);
+        game.load.spritesheet('tank1', 'assets/tank/spritesheets/tanksheet2.png', 42, 40);
+        game.load.spritesheet('tank2', 'assets/tank/spritesheets/tanksheet3.png', 42, 40);
+        game.load.spritesheet('tank3', 'assets/tank/spritesheets/tanksheet4.png', 42, 40);
     },
     loadFonts: function () {
         WebFontConfig = {
